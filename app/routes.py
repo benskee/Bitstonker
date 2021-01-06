@@ -1,37 +1,35 @@
 from . import app
 from flask import render_template, request, redirect
-import requests
+import requests, os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
-
-@app.route('/')
-@app.route('/home', methods=["GET", "POST"])
-def home():
+@app.route('/', methods=["GET", "POST"])
+def index():
     if request.method == "GET":
         stonk = ""
         df_btc = ""
-        display_toggle = "none"
+        graph = ""
+
     if request.method == "POST":
-        stonk = request.form.get('stonk')
+        stonk = request.form.get('stonk').upper()
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
         
 
         #get stonk dataframe
-        api_key = 'YOUR API KEY'
-        split = None
-        split_date = None
-        stonk_alpha = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={stonk}&outputsize=full&apikey={api_key}')
+        api_key = os.getenv('SECRET_KEY')
+        stonk_alpha = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={stonk}&outputsize=full&apikey={api_key}')
         this_df = stonk_alpha.json()
         df_stonk = pd.DataFrame.from_dict(this_df['Time Series (Daily)'],orient='index')
 
         #reduce stonk data to close price
         df_stonk.reset_index(inplace=True)
-        df_stonk.rename(columns={'index':'date', '4. close':'stonk_close'}, inplace=True)
-        df_stonk.drop(columns=['1. open', '2. high','3. low', '5. volume'], axis=1, inplace=True)
+        df_stonk.rename(columns={'index':'date', '5. adjusted close': 'stonk_close'}, inplace=True)
+        df_stonk.drop(columns=['1. open', '2. high', '3. low', '4. close', '6. volume', '7. dividend amount','8. split coefficient'], axis=1, inplace=True)
         for num in ['stonk_close']:
             df_stonk[num] = df_stonk[num].astype(float, copy=True)
         for date in range(len(df_stonk['date'])):
@@ -59,6 +57,7 @@ def home():
         df_btc['stonk_close'] = df_stonk['stonk_close']
         df_btc = df_btc.reset_index()
 
+        #get stock price in bitcoin
         btc_price_list = []
         for date in df_btc.index:
             if df_btc.stonk_close[date]:        
@@ -71,39 +70,21 @@ def home():
         start = df_btc.loc[df_btc['date'] == start_date].index[0]
         end = df_btc.loc[df_btc['date'] == end_date].index[0]
 
-        # account for stock splits
-        post_split = ''
-        split = None
-        display_toggle = "none"
-        if split:
-            display_toggle = "Block"
-            split = datetime.strptime(split, '%Y-%m-%d').date()
-            split_date = df_btc.loc[df_btc['date'] == split].index[0]
-            post_split = ' (After Split)'
-            plt.subplots(figsize=(15, 12))
-            plt.grid(True)
-            plt.plot(df_btc.date[(split_date+1):], df_btc.btc_price[(split_date+1):].fillna(method='ffill'), color='orange')
-            plt.plot(df_btc.date[(split_date+1):], df_btc.stonk_close[(split_date+1):].fillna(method='ffill'), color='green')
-            plt.title(f'{stonk} Daily Stock Price in Bitcoin (Before Split)', fontsize=18)
-            plt.ylabel('Price in Tens of Thousands of Sats | Dollars', fontsize=16)
-            plt.xlabel('Date', fontsize=16)
-            plt.legend(['Bitcoin', 'Dollars'], loc=2)
-            plt.savefig('app/static/image_2.png');
+        for filename in os.listdir('app/static/'):
+            if filename.startswith('image_'):
+                os.remove('app/static/' + filename)
 
+        graph = f'image_{str(datetime.now())[-5:]}.png'
         plt.subplots(figsize=(15, 12))
         plt.grid(True)
         plt.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), color='orange')
         plt.plot(df_btc.date[end:start], df_btc.stonk_close[end:start].fillna(method='ffill'), color='green')
-        plt.title(f'{stonk} Daily Stock Price in Bitcoin{post_split}', fontsize=18)
+        plt.title(f'{stonk} Daily Stock Price in Bitcoin', fontsize=18)
         plt.ylabel('Price in Tens of Thousands of Sats | Dollars', fontsize=16)
         plt.xlabel('Date', fontsize=16)
         plt.legend(['Bitcoin', 'Dollars'], loc=2)
-        plt.savefig('app/static/image_1.png');
+        plt.savefig(f'app/static/{graph}');
 
-        print(start)
-        print(end)
-        
-        # return redirect(request.url)
-        return render_template('index.html', stonk=stonk, df_btc=df_btc)
-    return render_template('index.html', stonk=stonk, df_btc=df_btc)
+        return render_template('index.html', stonk=stonk, df_btc=df_btc, graph=graph)
+    return render_template('index.html', stonk=stonk, df_btc=df_btc, graph=graph)
         

@@ -1,32 +1,15 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <h1>Home Page</h1>
-    <form class="form-inline" method="POST">
-    <!-- <form class="form-inline" action="{{ url_for('home') }}" method="POST"> -->
-        <div class="form-group">
+    <h1>Bit Stonker</h1>
+    <form class="form-inline" action="{{ url_for('index') }}" method="POST">
             <div><input type="text" name="stonk" class="form-control" placeholder="Type your stonk here."></div>
             <label for="start_date" style= "margin:0px 10px"> Start Date: </label>
             <input type="date" name="start_date">
             <label for="end_date" style= "margin:0px 10px"> End Date: </label>
             <input type="date" name="end_date">
-        </div>
-        <button type="submit" class="btn btn-info" style= "margin:0px 10px">Submit</button>
-
+            <button type="submit" class="btn btn-info" style= "margin:0px 10px">Submit</button>
     </form>
-
-    <input type="checkbox" id="myCheck" onclick="myFunction()">
     
-    <script>
-        function myFunction() {
-            var x = document.getElementById("split_graph");
-            if (x.style.display === "block") {
-                x.style.display = "none";
-            } else {
-                x.style.display = "block";
-            }
-        }
-    </script>
-    <img id="split_graph" src="{{url_for('static', filename='image_2.png')}}" alt="">
-    <img src="{{url_for('static', filename='image_1.png')}}" alt="">
+    <img src="{{url_for('static', filename=graph)}}" alt="">
 {% endblock %}
