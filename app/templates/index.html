@@ -1,12 +1,12 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <h1>Bit Stonker</h1>
+    <h1 style="text-align:center">Bit Stonker <br><br></h1>
     <form class="form-inline" action="{{ url_for('index') }}" method="POST">
             <div><input type="text" name="stonk" class="form-control" placeholder="Type your stonk here."></div>
             <label for="start_date" style= "margin:0px 10px"> Start Date: </label>
             <input type="date" name="start_date">
-            <label for="end_date" style= "margin:0px 10px"> End Date: </label>
+            <label for="end_date" max="{{today}}" style= "margin:0px 10px"> End Date: </label>
             <input type="date" name="end_date">
             <button type="submit" class="btn btn-info" style= "margin:0px 10px">Submit</button>
     </form>

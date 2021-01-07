@@ -13,12 +13,13 @@ def index():
         stonk = ""
         df_btc = ""
         graph = ""
+        
+        
 
     if request.method == "POST":
         stonk = request.form.get('stonk').upper()
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
-        
 
         #get stonk dataframe
         api_key = os.getenv('SECRET_KEY')
@@ -67,6 +68,16 @@ def index():
 
         start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
         end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+
+        if start_date > end_date:
+            start_date, end_date = end_date, start_date
+
+        if start_date < df_btc['date'][len(df_btc)-1]:
+            start_date = df_btc['date'][len(df_btc)-1]
+
+        if end_date > df_btc['date'][0]:
+            end_date = df_btc['date'][0]
+
         start = df_btc.loc[df_btc['date'] == start_date].index[0]
         end = df_btc.loc[df_btc['date'] == end_date].index[0]
 
