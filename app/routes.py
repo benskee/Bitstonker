@@ -92,7 +92,6 @@ def index():
         plt.plot(df_btc.date[end:start], df_btc.stonk_close[end:start].fillna(method='ffill'), color='green')
         plt.title(f'{stonk} Daily Stock Price in Bitcoin', fontsize=18)
         plt.ylabel('Price in Tens of Thousands of Sats | Dollars', fontsize=16)
-        plt.xlabel('Date', fontsize=16)
         plt.legend(['Bitcoin', 'Dollars'], loc=2)
         plt.savefig(f'app/static/{graph}');
 
