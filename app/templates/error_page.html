@@ -2,6 +2,11 @@
 
 {% block content %}
     <h1 style="text-align:center">Oops, something broke.<br><br></h1>
+    <div style="text-align:center">
+        <a href="https://twitter.com/PeterSchiff/status/1303009420713111553">
+            <img src="{{url_for('static', filename="schiffy.png")}}" class="img-fluid" alt="" style="margin:5%">
+        </a>
+    </div>
     <h6>Please check your inputs and try again.</h6>
     <h3><br><a href="{{ url_for('index') }}">Back</a></h3>
 {% endblock %}
