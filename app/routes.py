@@ -13,6 +13,7 @@ def index():
         stonk = ""
         df_btc = ""
         graph = ""
+        graph_display = "none"
         
         
 
@@ -20,6 +21,10 @@ def index():
         stonk = request.form.get('stonk').upper()
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
+        graph_display = "block"
+
+        if not stonk:
+            stonk = "SPY"
 
         #get stonk dataframe
         api_key = os.getenv('SECRET_KEY')
@@ -40,6 +45,8 @@ def index():
         btc_df = btc_alpha.json()
         df_btc = pd.DataFrame.from_dict(btc_df['Time Series (Digital Currency Daily)'],orient='index')
         df_btc.reset_index(inplace=True)
+        if not end_date:
+            end_date = df_btc['index'][0]
         for date in range(len(df_btc['index'])):
             df_btc['index'][date] = datetime.strptime(df_btc['index'][date], '%Y-%m-%d').date()
         df_btc.rename(columns=lambda x: x.replace(' ', '').lower(), inplace=True)
@@ -66,9 +73,14 @@ def index():
                 btc_price_list.append(btc_price)
         df_btc['btc_price'] = btc_price_list
 
-        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        if start_date:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        else:
+            start_date = df_btc['date'][len(df_btc)-1]
+
         end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
 
+        
         if start_date > end_date:
             start_date, end_date = end_date, start_date
 
@@ -91,12 +103,40 @@ def index():
         plt.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), color='orange')
         plt.plot(df_btc.date[end:start], df_btc.stonk_close[end:start].fillna(method='ffill'), color='green')
         plt.title(f'{stonk} Daily Stock Price in Bitcoin', fontsize=18)
-        plt.ylabel('Price in Tens of Thousands of Sats | Dollars', fontsize=16)
+        plt.ylabel('Price in Tens of Thousands of Sats (.0001 bitcoin) | Dollars', fontsize=16)
         plt.legend(['Bitcoin', 'Dollars'], loc=2)
         plt.savefig(f'app/static/{graph}');
 
-        return render_template('index.html', stonk=stonk, df_btc=df_btc, graph=graph)
-    return render_template('index.html', stonk=stonk, df_btc=df_btc, graph=graph)
+        adj_start = 0
+
+        for day in range(0, len(df_btc)-1):
+            if np.isnan(df_btc.stonk_close[start - adj_start]) == True:
+                adj_start -= day
+            else:
+                break
+
+        adj_end = 0
+
+        for day in range(0, len(df_btc)-1):
+            if np.isnan(df_btc.stonk_close[end + adj_end]) == True:
+                adj_end += day
+            else:
+                break
+            
+
+        usd_start_price = round(df_btc.stonk_close[start - adj_start], 2)
+        btc_start_price = round(df_btc.btc_price[start - adj_start], 2)
+        usd_end_price = round(df_btc.stonk_close[end + adj_end], 2)
+        btc_end_price = round(df_btc.btc_price[end + adj_end], 2)
+        usd_roi = usd_end_price - usd_start_price
+        usd_roi_pct = round((usd_roi/usd_start_price), 2)*100
+        btc_roi = round(btc_end_price - btc_start_price, 2)
+        btc_roi_pct = round((btc_roi/btc_start_price), 2)*100
+
+        return render_template('index.html', stonk=stonk, df_btc=df_btc, graph=graph, graph_display=graph_display, 
+        usd_start_price=usd_start_price, btc_start_price=btc_start_price, usd_end_price=usd_end_price, btc_end_price=btc_end_price,
+        usd_roi=usd_roi, usd_roi_pct=usd_roi_pct, btc_roi=btc_roi, btc_roi_pct=btc_roi_pct)
+    return render_template('index.html', stonk=stonk, df_btc=df_btc, graph=graph, graph_display=graph_display)
         
 
 @app.route("/about")

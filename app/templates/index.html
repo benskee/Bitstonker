@@ -9,7 +9,7 @@
                 <input type="date" name="start_date">
             </div>
             <div class="form-group">
-                <label for="end_date" max="{{today}}" style= "margin:0px 15px 0px 10px">End Date: </label>
+                <label for="end_date" style= "margin:0px 15px 0px 10px">End Date: </label>
                 <input type="date" name="end_date" style= "margin:0px 15px 0px 0px">
             </div>
             <div class="form-group">
@@ -17,8 +17,47 @@
             </div>
         </form>
     
-    <img src="{{url_for('static', filename=graph)}}" class="img-fluid" alt="">
+        <div style="display:{{graph_display}}">
+            <img src="{{url_for('static', filename=graph)}}" class="img-fluid" alt="assets trending to zero">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Currency</th>
+                        <th scope="col">Start price</th>
+                        <th scope="col">End price</th>
+                        <th scope="col">ROI</th>
+                        <th scope="col">ROI %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Dollar</th>
+                        <td>{{usd_start_price}}</td>
+                        <td>{{usd_end_price}}</td>
+                        <td>{{usd_roi}}</td>
+                        <td>{{usd_roi_pct}}%</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Bitcoin</th>
+                        <td>{{btc_start_price}}</td>
+                        <td>{{btc_end_price}}</td>
+                        <td>{{btc_roi}}</td>
+                        <td>{{btc_roi_pct}}%</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br><br>
+            <p><b>
+                The <span style="color:green">green</span> line is the stock priced in dollars.<br>
+                <br>
+                The <span style="color:orange">orange</span> line is the stock priced in bitcoin. In the timeframe available the unit of ten thousand satoshis (.0001 bitcoin)
+                is the closest to the dollar and makes for the easiest comparison. If the orange line goes up the stock outperformed bitcoin. 
+                If the orange line goes down bitcoin outperformed the stock.<br>
+                </b><br>
+                <a href="{{ url_for('about') }}">I don't get it</a>
+            </p>
+        </div>
     <div style="text-align:center"> 
-        <img src="{{url_for('static', filename="bitcoin_rising.png")}}" class="img-fluid" alt="bitcoin rising" style="max-width:30%;margin:10%">
+        <img src="{{url_for('static', filename='bitcoin_rising.png')}}" class="img-fluid" alt="bitcoin rising" style="max-width:30%;margin:10%">
     </div>
 {% endblock %}
