@@ -128,7 +128,7 @@ def index():
         btc_start_price = round(df_btc.btc_price[start - adj_start], 2)
         usd_end_price = round(df_btc.stonk_close[end + adj_end], 2)
         btc_end_price = round(df_btc.btc_price[end + adj_end], 2)
-        usd_roi = usd_end_price - usd_start_price
+        usd_roi = round(usd_end_price - usd_start_price, 2)
         usd_roi_pct = round((usd_roi/usd_start_price), 2)*100
         btc_roi = round(btc_end_price - btc_start_price, 2)
         btc_roi_pct = round((btc_roi/btc_start_price), 2)*100
