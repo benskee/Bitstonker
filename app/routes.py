@@ -24,6 +24,7 @@ def index():
         graph_display = "block"
         check = request.form.get('dollar_check')
         dollar_display = "none"
+        df_btc = ""
 
         if not stonk:
             stonk = "SPY"
@@ -42,9 +43,11 @@ def index():
             df_stonk[num] = df_stonk[num].astype(float, copy=True)
         for date in range(len(df_stonk['date'])):
             df_stonk['date'][date] = datetime.strptime(df_stonk['date'][date], '%Y-%m-%d').date()
+
         # get bitcoin data
-        btc_alpha = requests.get('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey={api_key}')
+        btc_alpha = requests.get(f'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey={api_key}')
         btc_df = btc_alpha.json()
+        print(btc_df)
         df_btc = pd.DataFrame.from_dict(btc_df['Time Series (Digital Currency Daily)'],orient='index')
         df_btc.reset_index(inplace=True)
         if not end_date:
