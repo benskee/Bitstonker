@@ -22,6 +22,8 @@ def index():
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
         graph_display = "block"
+        check = request.form.get('dollar_check')
+        dollar_display = "none"
 
         if not stonk:
             stonk = "SPY"
@@ -98,14 +100,24 @@ def index():
                 os.remove('app/static/' + filename)
 
         graph = f'image_{str(datetime.now())[-5:]}.png'
-        plt.subplots(figsize=(15, 12))
-        plt.grid(True)
-        plt.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), color='orange')
-        plt.plot(df_btc.date[end:start], df_btc.stonk_close[end:start].fillna(method='ffill'), color='green')
-        plt.title(f'{stonk} Daily Stock Price in Bitcoin', fontsize=18)
-        plt.ylabel('Price in Tens of Thousands of Sats (.0001 bitcoin) | Dollars', fontsize=16)
-        plt.legend(['Bitcoin', 'Dollars'], loc=2)
-        plt.savefig(f'app/static/{graph}');
+        if check != None: 
+            dollar_display = "block"
+            plt.subplots(figsize=(15, 12))
+            plt.grid(True)
+            plt.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), color='orange')
+            plt.plot(df_btc.date[end:start], df_btc.stonk_close[end:start].fillna(method='ffill'), color='green')
+            plt.title(f'{stonk} Daily Stock Price in Bitcoin', fontsize=18)
+            plt.ylabel('Price in Tens of Thousands of Sats (.0001 bitcoin) | Dollars', fontsize=16)
+            plt.legend(['Bitcoin', 'Dollars'], loc=2)
+            plt.savefig(f'app/static/{graph}');
+        else:
+            plt.subplots(figsize=(15, 12))
+            plt.grid(True)
+            plt.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), color='orange')
+            plt.title(f'{stonk} Daily Stock Price in Bitcoin', fontsize=18)
+            plt.ylabel('Price in Tens of Thousands of Sats (.0001 bitcoin)', fontsize=16)
+            plt.legend(['Bitcoin'], loc=2)
+            plt.savefig(f'app/static/{graph}');
 
         adj_start = 0
 
@@ -124,18 +136,20 @@ def index():
                 break
             
 
+        # populate table
         usd_start_price = round(df_btc.stonk_close[start - adj_start], 2)
         btc_start_price = round(df_btc.btc_price[start - adj_start], 2)
         usd_end_price = round(df_btc.stonk_close[end + adj_end], 2)
         btc_end_price = round(df_btc.btc_price[end + adj_end], 2)
         usd_roi = round(usd_end_price - usd_start_price, 2)
-        usd_roi_pct = round((usd_roi/usd_start_price), 2)*100
+        usd_roi_pct = "{0:.2%}".format(usd_roi/usd_start_price)
         btc_roi = round(btc_end_price - btc_start_price, 2)
-        btc_roi_pct = round((btc_roi/btc_start_price), 2)*100
+        btc_roi_pct = "{0:.2%}".format(btc_roi/btc_start_price)
+        
 
         return render_template('index.html', stonk=stonk, df_btc=df_btc, graph=graph, graph_display=graph_display, 
         usd_start_price=usd_start_price, btc_start_price=btc_start_price, usd_end_price=usd_end_price, btc_end_price=btc_end_price,
-        usd_roi=usd_roi, usd_roi_pct=usd_roi_pct, btc_roi=btc_roi, btc_roi_pct=btc_roi_pct)
+        usd_roi=usd_roi, usd_roi_pct=usd_roi_pct, btc_roi=btc_roi, btc_roi_pct=btc_roi_pct, dollar_display=dollar_display)
     return render_template('index.html', stonk=stonk, df_btc=df_btc, graph=graph, graph_display=graph_display)
         
 

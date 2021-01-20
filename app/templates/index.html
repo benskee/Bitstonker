@@ -13,6 +13,10 @@
                 <input type="date" name="end_date" style= "margin:0px 15px 0px 0px">
             </div>
             <div class="form-group">
+                <label for="dollar_check" style="margin:0px 5px 0px 10px">Include dollar price: </label>
+                <input type="checkbox" name="dollar_check" id='dollar_check'>
+            </div>
+            <div class="form-group">
                 <button type="submit" class="btn btn-info" style= "margin:0px 10px">Submit</button>
             </div>
         </form>
@@ -35,21 +39,22 @@
                         <td>{{usd_start_price}}</td>
                         <td>{{usd_end_price}}</td>
                         <td>{{usd_roi}}</td>
-                        <td>{{usd_roi_pct}}%</td>
+                        <td>{{usd_roi_pct}}</td>
                     </tr>
                     <tr>
                         <th scope="row">Bitcoin</th>
                         <td>{{btc_start_price}}</td>
                         <td>{{btc_end_price}}</td>
                         <td>{{btc_roi}}</td>
-                        <td>{{btc_roi_pct}}%</td>
+                        <td>{{btc_roi_pct}}</td>
                     </tr>
                 </tbody>
             </table>
             <br><br>
-            <p><b>
+            <p style="display:{{dollar_display}}"><b>
                 The <span style="color:green">green</span> line is the stock priced in dollars.<br>
-                <br>
+            </b><br>
+            <p><b>
                 The <span style="color:orange">orange</span> line is the stock priced in bitcoin. In the timeframe available the unit of ten thousand satoshis (.0001 bitcoin)
                 is the closest to the dollar and makes for the easiest comparison. If the orange line goes up the stock outperformed bitcoin. 
                 If the orange line goes down bitcoin outperformed the stock.<br>
