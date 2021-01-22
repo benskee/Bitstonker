@@ -30,7 +30,7 @@ def index():
             stonk = "SPY"
 
         #get stonk dataframe
-        api_key = os.getenv('SECRET_KEY')
+        api_key = os.environ.get('SECRET_KEY')
         stonk_alpha = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={stonk}&outputsize=full&apikey={api_key}')
         this_df = stonk_alpha.json()
         df_stonk = pd.DataFrame.from_dict(this_df['Time Series (Daily)'],orient='index')
