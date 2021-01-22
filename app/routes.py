@@ -45,30 +45,39 @@ def index():
             df_stonk['date'][date] = datetime.strptime(df_stonk['date'][date], '%Y-%m-%d').date()
 
         # get bitcoin data
-        btc_alpha = requests.get(f'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey={api_key}')
-        btc_df = btc_alpha.json()
-        print(btc_df)
-        df_btc = pd.DataFrame.from_dict(btc_df['Time Series (Digital Currency Daily)'],orient='index')
-        df_btc.reset_index(inplace=True)
-        if not end_date:
-            end_date = df_btc['index'][0]
-        for date in range(len(df_btc['index'])):
-            df_btc['index'][date] = datetime.strptime(df_btc['index'][date], '%Y-%m-%d').date()
-        df_btc.rename(columns=lambda x: x.replace(' ', '').lower(), inplace=True)
-        df_btc.rename(columns={"index":"date", '2a.high(usd)':'high', '3b.low(usd)':'low'}, inplace=True)
-        df_btc.drop(columns=['1a.open(usd)', '1b.open(usd)', '2b.high(usd)',
-            '3a.low(usd)', '4a.close(usd)', '4b.close(usd)',
-            '5.volume', '6.marketcap(usd)'], axis=1, inplace=True)
-        for num in ['high', 'low']:
-            df_btc[num] = df_btc[num].astype(float, copy=True)
-        df_btc['btc_average'] = df_btc[['high', 'low']].mean(axis=1)
-        df_btc.drop(columns=['high', 'low'], axis=1, inplace=True)
+        dir_list = os.listdir('app/csv/')
+        btc_name = str(datetime.now())[:10]
 
-        #combine charts and account for stock market days
+        if len(dir_list) == 0 or btc_name + '.csv'!=dir_list[0]:
+            for filename in os.listdir('app/csv/'):
+                os.remove(f'app/csv/{filename}')
+
+            btc_alpha = requests.get(f'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey={api_key}')
+            btc_df = btc_alpha.json()
+            btc_data = pd.DataFrame.from_dict(btc_df['Time Series (Digital Currency Daily)'],orient='index')
+            btc_data.reset_index(inplace=True)
+            btc_data.rename(columns=lambda x: x.replace(' ', '').lower(), inplace=True)
+            btc_data.rename(columns={"index":"date", '2a.high(usd)':'high', '3b.low(usd)':'low'}, inplace=True)
+            btc_data.drop(columns=['1a.open(usd)', '1b.open(usd)', '2b.high(usd)',
+                '3a.low(usd)', '4a.close(usd)', '4b.close(usd)',
+                '5.volume', '6.marketcap(usd)'], axis=1, inplace=True)
+            for num in ['high', 'low']:
+                btc_data[num] = btc_data[num].astype(float, copy=True)
+            btc_data['btc_average'] = btc_data[['high', 'low']].mean(axis=1)
+            btc_data.drop(columns=['high', 'low'], axis=1, inplace=True)
+            btc_data.to_csv(rf'app/csv/{btc_name}.csv')
+            df_btc = btc_data
+        else:
+            get_df_btc = pd.read_csv(f'app/csv/{btc_name}.csv')
+            df_btc = get_df_btc
+
+        for date in range(len(df_btc['date'])):
+            df_btc['date'][date] = datetime.strptime(df_btc['date'][date], '%Y-%m-%d').date()
         df_btc.set_index('date', inplace=True)
+        #combine charts and account for stock market days
         df_stonk.set_index('date', inplace=True)
         df_btc['stonk_close'] = df_stonk['stonk_close']
-        df_btc = df_btc.reset_index()
+        df_btc.reset_index(inplace=True)
 
         #get stock price in bitcoin
         btc_price_list = []
@@ -78,12 +87,17 @@ def index():
                 btc_price_list.append(btc_price)
         df_btc['btc_price'] = btc_price_list
 
+
+        # ensure start and end dates are valid
         if start_date:
             start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
         else:
             start_date = df_btc['date'][len(df_btc)-1]
 
-        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        if not end_date:
+            end_date = df_btc['date'][0]
+        else:
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
 
         
         if start_date > end_date:
@@ -102,6 +116,7 @@ def index():
             if filename.startswith('image_'):
                 os.remove('app/static/' + filename)
 
+        # generate graph 
         graph = f'image_{str(datetime.now())[-5:]}.png'
         if check != None: 
             dollar_display = "block"
@@ -110,7 +125,7 @@ def index():
             plt.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), color='orange')
             plt.plot(df_btc.date[end:start], df_btc.stonk_close[end:start].fillna(method='ffill'), color='green')
             plt.title(f'{stonk} Daily Stock Price in Bitcoin', fontsize=18)
-            plt.ylabel('Price in Tens of Thousands of Sats (.0001 bitcoin) | Dollars', fontsize=16)
+            plt.ylabel('Price in Ten Thousand Sats (.0001 Bitcoin) | Dollars', fontsize=16)
             plt.legend(['Bitcoin', 'Dollars'], loc=2)
             plt.savefig(f'app/static/{graph}');
         else:
@@ -118,21 +133,23 @@ def index():
             plt.grid(True)
             plt.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), color='orange')
             plt.title(f'{stonk} Daily Stock Price in Bitcoin', fontsize=18)
-            plt.ylabel('Price in Tens of Thousands of Sats (.0001 bitcoin)', fontsize=16)
+            plt.ylabel('Price in Ten Thousand Sats (.0001 Bitcoin)', fontsize=16)
             plt.legend(['Bitcoin'], loc=2)
             plt.savefig(f'app/static/{graph}');
 
+        
+        # account for start or end on day market is closed
         adj_start = 0
 
-        for day in range(0, len(df_btc)-1):
+        for day in range(1, len(df_btc)-1):
             if np.isnan(df_btc.stonk_close[start - adj_start]) == True:
-                adj_start -= day
+                adj_start += day
             else:
                 break
 
         adj_end = 0
 
-        for day in range(0, len(df_btc)-1):
+        for day in range(1, len(df_btc)-1):
             if np.isnan(df_btc.stonk_close[end + adj_end]) == True:
                 adj_end += day
             else:

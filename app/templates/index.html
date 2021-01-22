@@ -42,7 +42,7 @@
                         <td>{{usd_roi_pct}}</td>
                     </tr>
                     <tr>
-                        <th scope="row">Bitcoin</th>
+                        <th scope="row">Bitcoin (10k Sats)</th>
                         <td>{{btc_start_price}}</td>
                         <td>{{btc_end_price}}</td>
                         <td>{{btc_roi}}</td>
@@ -55,8 +55,11 @@
                 The <span style="color:green">green</span> line is the stock priced in dollars.<br>
             </b><br>
             <p><b>
-                The <span style="color:orange">orange</span> line is the stock priced in bitcoin. In the timeframe available the unit of ten thousand satoshis (.0001 bitcoin)
-                is the closest to the dollar and makes for the easiest comparison. If the orange line goes up the stock outperformed bitcoin. 
+                The <span style="color:orange">orange</span> line is the stock priced in bitcoin 
+                (how much bitcoin it would take to buy one share). 
+                In the timeframe available the unit of ten thousand satoshis (.0001 bitcoin)
+                is the closest to the dollar and makes for the easiest comparison. 
+                If the orange line goes up the stock outperformed bitcoin. 
                 If the orange line goes down bitcoin outperformed the stock.<br>
                 </b><br>
                 <a href="{{ url_for('about') }}">I don't get it</a>
