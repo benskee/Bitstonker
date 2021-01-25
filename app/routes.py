@@ -7,6 +7,14 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+@app.before_request
+def before_request():
+    if request.url.startswith('http://') and request.url.startswith('http://127.0.0.1:5000/') == False:
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
+
+
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == "GET":
