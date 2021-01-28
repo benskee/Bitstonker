@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1 style="text-align:center">Stonk by Stonk <br><br></h1>
+<form class="form-inline" action="{{ url_for('s2s') }}" method="POST">
+    <div class="form-group"><input type="text" name="stonk1" class="form-control" style="margin:0px 10px"
+            placeholder="Type your first stonk"></div>
+    <div class="form-group"><input type="text" name="stonk2" class="form-control" style="margin:0px 10px"
+            placeholder="Type your second stonk"></div>
+    <div class="form-group">
+        <label for="s2s_start_date" style="margin:0px 10px">Start Date: </label>
+        <input type="date" name="s2s_start_date">
+    </div>
+    <div class="form-group">
+        <label for="s2s_end_date" style="margin:0px 15px 0px 10px">End Date: </label>
+        <input type="date" name="s2s_end_date" style="margin:0px 15px 0px 0px">
+    </div>
+    <div class="form-group">
+        <label for="s2s_dollar_check" style="margin:0px 5px 0px 10px">Include dollar price: </label>
+        <input type="checkbox" name="s2s_dollar_check" id='s2s_dollar_check'>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-info" style="margin:10px 10px">Submit</button>
+    </div>
+</form>
+
+<div style="display:{{s2s_graph_display}}">
+    <img src="{{url_for('static', filename=s2s_graph)}}" class="img-fluid" alt="stonky stonk graph">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Currency</th>
+                <th scope="col">Start price</th>
+                <th scope="col">End price</th>
+                <th scope="col">ROI</th>
+                <th scope="col">ROI %</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">{{stonk1}} in Dollars</th>
+                <td>{{stonk1_start_price}}</td>
+                <td>{{stonk1_end_price}}</td>
+                <td>{{stonk1_roi}}</td>
+                <td>{{stonk1_roi_pct}}</td>
+            </tr>
+            <tr>
+                <th scope="row">{{stonk2}} in Dollars</th>
+                <td>{{stonk2_start_price}}</td>
+                <td>{{stonk2_end_price}}</td>
+                <td>{{stonk2_roi}}</td>
+                <td>{{stonk2_roi_pct}}</td>
+            </tr>
+            <tr>
+                <th scope="row">{{stonk1}} Priced in {{stonk2}}</th>
+                <td>{{s2s_start_price}}</td>
+                <td>{{s2s_end_price}}</td>
+                <td>{{s2s_roi}}</td>
+                <td>{{s2s_roi_pct}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+    <p style="display:{{s2s_dollar_display}}"><b>
+            The <span style="color:green">green</span> line is {{stonk1}} priced in dollars.<br>
+        </b>
+    <p><b>
+            The <span style="color:orange">orange</span> line is stonk 1 ({{stonk1}}) priced in stonk 2 ({{stonk2}}).
+            In other words how many shares of {{stonk2}} it would take to buy one share of {{stonk1}}.
+            If the orange line goes up {{stonk1}} outperformed {{stonk2}}.
+            If the orange line goes down {{stonk2}} outperformed {{stonk1}}.<br>
+        </b><br>       
+    </p>
+</div>
+<div style="border-style:solid;margin:auto;max-width:75%;text-align:center">
+    <p style="margin:5px"><b>The stonk by stonk tool does not have anything to do with Bitcoin directly but is useful to compare 
+        the relative prices of stonks. This may come in handy for rebalancing portfolios or pair trading.</b>
+    </p>
+</div>
+<br>
+{% endblock %}

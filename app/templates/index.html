@@ -52,20 +52,23 @@
             </table>
             <br><br>
             <p style="display:{{dollar_display}}"><b>
-                The <span style="color:green">green</span> line is the stock priced in dollars.<br>
+                The <span style="color:green">green</span> line is the stonk priced in dollars.<br>
             </b><br>
             <p><b>
-                The <span style="color:orange">orange</span> line is the stock priced in bitcoin 
+                The <span style="color:orange">orange</span> line is the stonk priced in bitcoin 
                 (how much bitcoin it would take to buy one share). 
                 In the timeframe available the unit of ten thousand satoshis (.0001 bitcoin)
                 is the closest to the dollar and makes for the easiest comparison. 
-                If the orange line goes up the stock outperformed bitcoin. 
-                If the orange line goes down bitcoin outperformed the stock.<br>
+                If the orange line goes up the stonk outperformed bitcoin. 
+                If the orange line goes down bitcoin outperformed the stonk.<br>
                 </b><br>
                 <a href="{{ url_for('about') }}">I don't get it</a>
             </p>
         </div>
-    <div style="text-align:center"> 
+    <div class='d-block d-lg-none' style="text-align:center"> 
+        <img src="{{url_for('static', filename='bitcoin_rising.png')}}" class="img-fluid" alt="bitcoin rising" style="max-width:60%;margin:10%">
+    </div>
+    <div class='d-none d-lg-block' style="text-align:center"> 
         <img src="{{url_for('static', filename='bitcoin_rising.png')}}" class="img-fluid" alt="bitcoin rising" style="max-width:30%;margin:10%">
     </div>
 {% endblock %}
