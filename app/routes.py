@@ -54,11 +54,12 @@ def index():
 
         # get bitcoin data
         dir_list = os.listdir('app/csv/')
-        btc_name = str(datetime.now())[:10]
+        btc_name = '2021-02-01'
+        # btc_name = str(datetime.now())[:10]
 
         if len(dir_list) == 0 or btc_name + '.csv'!=dir_list[0]:
-            for filename in os.listdir('app/csv/'):
-                os.remove(f'app/csv/{filename}')
+            # for filename in os.listdir('app/csv/'):
+                # os.remove(f'app/csv/{filename}')
 
             btc_alpha = requests.get(f'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey={api_key}')
             btc_df = btc_alpha.json()
@@ -71,7 +72,7 @@ def index():
                 '5.volume', '6.marketcap(usd)'], axis=1, inplace=True)
             for num in ['high', 'low']:
                 btc_data[num] = btc_data[num].astype(float, copy=True)
-            btc_data['btc_average'] = btc_data[['high', 'low']].mean(axis=1)
+            # btc_data['btc_average'] = btc_data[['high', 'low']].mean(axis=1)
             btc_data.drop(columns=['high', 'low'], axis=1, inplace=True)
             btc_data.to_csv(rf'app/csv/{btc_name}.csv')
             df_btc = btc_data
@@ -91,7 +92,7 @@ def index():
         btc_price_list = []
         for date in df_btc.index:
             if df_btc.stonk_close[date]:        
-                btc_price = float(format(df_btc.stonk_close[date]*10000/df_btc.btc_average[date], '.8f'))
+                btc_price = float(format(df_btc.stonk_close[date]*10000/df_btc.close_price[date], '.8f'))
                 btc_price_list.append(btc_price)
         df_btc['btc_price'] = btc_price_list
 
@@ -100,10 +101,10 @@ def index():
         if start_date:
             start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
         else:
-            start_date = df_btc['date'][len(df_btc)-1]
+            start_date = df_btc['date'][0]
 
         if not end_date:
-            end_date = df_btc['date'][0]
+            end_date = df_btc['date'][len(df_btc)-1]
         else:
             end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
 
@@ -111,11 +112,11 @@ def index():
         if start_date > end_date:
             start_date, end_date = end_date, start_date
 
-        if start_date < df_btc['date'][len(df_btc)-1]:
-            start_date = df_btc['date'][len(df_btc)-1]
+        if start_date < df_btc['date'][0]:
+            start_date = df_btc['date'][0]
 
-        if end_date > df_btc['date'][0]:
-            end_date = df_btc['date'][0]
+        if end_date > df_btc['date'][len(df_btc)-1]:
+            end_date = df_btc['date'][len(df_btc)-1]
 
         start = df_btc.loc[df_btc['date'] == start_date].index[0]
         end = df_btc.loc[df_btc['date'] == end_date].index[0]
@@ -130,12 +131,12 @@ def index():
             dollar_display = "block"
             figure, ax1 = plt.subplots(figsize=(15, 12))
             plt.grid(True)
-            ax1.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), label='Bitcoin', color='orange')
+            ax1.plot(df_btc.date[start:end], df_btc.btc_price[start:end].fillna(method='ffill'), label='Bitcoin', color='orange')
             plt.title(f'{stonk} Daily stonk Price in Bitcoin', fontsize=18)
             plt.ylabel('Price in Ten Thousand Sats (.0001 Bitcoin)', fontsize=16)
             ax2 = plt.twinx()
             ax2.set_ylabel(f'Price in Dollars', fontsize=16)
-            ax2.plot(df_btc.date[end:start], df_btc.stonk_close[end:start].fillna(method='ffill'), label='Dollars', color='green')
+            ax2.plot(df_btc.date[start:end], df_btc.stonk_close[start:end].fillna(method='ffill'), label='Dollars', color='green')
             ax2.tick_params(axis='y')
             lines_1, labels_1 = ax1.get_legend_handles_labels()
             lines_2, labels_2 = ax2.get_legend_handles_labels()
@@ -146,7 +147,7 @@ def index():
         else:
             plt.subplots(figsize=(15, 12))
             plt.grid(True)
-            plt.plot(df_btc.date[end:start], df_btc.btc_price[end:start].fillna(method='ffill'), color='orange')
+            plt.plot(df_btc.date[start:end], df_btc.btc_price[start:end].fillna(method='ffill'), color='orange')
             plt.title(f'{stonk} Daily stonk Price in Bitcoin', fontsize=18)
             plt.ylabel('Price in Ten Thousand Sats (.0001 Bitcoin)', fontsize=16)
             plt.legend(['Bitcoin'], loc=2)
@@ -157,7 +158,7 @@ def index():
         adj_start = 0
 
         for day in range(1, len(df_btc)-1):
-            if np.isnan(df_btc.stonk_close[start - adj_start]) == True:
+            if np.isnan(df_btc.stonk_close[start + adj_start]) == True:
                 adj_start += day
             else:
                 break
@@ -165,17 +166,17 @@ def index():
         adj_end = 0
 
         for day in range(1, len(df_btc)-1):
-            if np.isnan(df_btc.stonk_close[end + adj_end]) == True:
+            if np.isnan(df_btc.stonk_close[end - adj_end]) == True:
                 adj_end += day
             else:
                 break
             
 
         # populate table
-        usd_start_price = round(df_btc.stonk_close[start - adj_start], 2)
-        btc_start_price = round(df_btc.btc_price[start - adj_start], 2)
-        usd_end_price = round(df_btc.stonk_close[end + adj_end], 2)
-        btc_end_price = round(df_btc.btc_price[end + adj_end], 2)
+        usd_start_price = round(df_btc.stonk_close[start + adj_start], 2)
+        btc_start_price = round(df_btc.btc_price[start + adj_start], 2)
+        usd_end_price = round(df_btc.stonk_close[end - adj_end], 2)
+        btc_end_price = round(df_btc.btc_price[end - adj_end], 2)
         usd_roi = round(usd_end_price - usd_start_price, 2)
         usd_roi_pct = "{0:.2%}".format(usd_roi/usd_start_price)
         btc_roi = round(btc_end_price - btc_start_price, 2)
