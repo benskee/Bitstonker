@@ -121,7 +121,7 @@ def index():
             end_date = df_btc['date'][len(df_btc)-1]
 
         start = df_btc.loc[df_btc['date'] == start_date].index[0]
-        end = df_btc.loc[df_btc['date'] == end_date].index[0] + 1 
+        end = df_btc.loc[df_btc['date'] == end_date].index[0]
 
         for filename in os.listdir('app/static/'):
             if filename.startswith('image_'):
@@ -133,12 +133,12 @@ def index():
             dollar_display = "block"
             figure, ax1 = plt.subplots(figsize=(15, 12))
             plt.grid(True)
-            ax1.plot(df_btc.date[start:end], df_btc.btc_price[start:end].fillna(method='ffill'), label='Bitcoin', color='orange')
+            ax1.plot(df_btc.date[start:end+1], df_btc.btc_price[start:end+1].fillna(method='ffill'), label='Bitcoin', color='orange')
             plt.title(f'{stonk} Daily stonk Price in Bitcoin', fontsize=18)
             plt.ylabel('Price in Ten Thousand Sats (.0001 Bitcoin)', fontsize=16)
             ax2 = plt.twinx()
             ax2.set_ylabel(f'Price in Dollars', fontsize=16)
-            ax2.plot(df_btc.date[start:end], df_btc.stonk_close[start:end].fillna(method='ffill'), label='Dollars', color='green')
+            ax2.plot(df_btc.date[start:end+1], df_btc.stonk_close[start:end+1].fillna(method='ffill'), label='Dollars', color='green')
             ax2.tick_params(axis='y')
             lines_1, labels_1 = ax1.get_legend_handles_labels()
             lines_2, labels_2 = ax2.get_legend_handles_labels()
@@ -149,7 +149,7 @@ def index():
         else:
             plt.subplots(figsize=(15, 12))
             plt.grid(True)
-            plt.plot(df_btc.date[start:end], df_btc.btc_price[start:end].fillna(method='ffill'), color='orange')
+            plt.plot(df_btc.date[start:end+1], df_btc.btc_price[start:end+1].fillna(method='ffill'), color='orange')
             plt.title(f'{stonk} Daily stonk Price in Bitcoin', fontsize=18)
             plt.ylabel('Price in Ten Thousand Sats (.0001 Bitcoin)', fontsize=16)
             plt.legend(['Bitcoin'], loc=2)
@@ -293,7 +293,7 @@ def s2s():
             else:
                 break
 
-        start = df_stonk2.loc[df_stonk2['date'] == s2s_start_date + timedelta(days=adj_start)].index[0] + 1
+        start = df_stonk2.loc[df_stonk2['date'] == s2s_start_date + timedelta(days=adj_start)].index[0]
 
 
         adj_end = 0
@@ -316,12 +316,12 @@ def s2s():
             s2s_dollar_display = "block"
             figure, ax1 = plt.subplots(figsize=(15, 12))
             plt.grid(True)
-            ax1.plot(df_stonk2.date[end:start], df_stonk2.stonk2_price[end:start].fillna(method='ffill'), label='Stonk by Stonk', color='orange')
+            ax1.plot(df_stonk2.date[end:start+1], df_stonk2.stonk2_price[end:start+1].fillna(method='ffill'), label='Stonk by Stonk', color='orange')
             plt.title(f'{stonk1} Daily Price in {stonk2}', fontsize=18)
             plt.ylabel(f'Price in shares of {stonk2}', fontsize=16)
             ax2 = plt.twinx()
             ax2.set_ylabel(f'Price in Dollars', fontsize=16)
-            ax2.plot(df_stonk2.date[end:start], df_stonk2.stonk_close[end:start].fillna(method='ffill'), label='Dollars', color='green')
+            ax2.plot(df_stonk2.date[end:start+1], df_stonk2.stonk_close[end:start+1].fillna(method='ffill'), label='Dollars', color='green')
             ax2.tick_params(axis='y')
             lines_1, labels_1 = ax1.get_legend_handles_labels()
             lines_2, labels_2 = ax2.get_legend_handles_labels()
