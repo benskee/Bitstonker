@@ -121,7 +121,7 @@ def index():
             end_date = df_btc['date'][len(df_btc)-1]
 
         start = df_btc.loc[df_btc['date'] == start_date].index[0]
-        end = df_btc.loc[df_btc['date'] == end_date].index[0]
+        end = df_btc.loc[df_btc['date'] == end_date].index[0] + 1 
 
         for filename in os.listdir('app/static/'):
             if filename.startswith('image_'):
@@ -293,7 +293,7 @@ def s2s():
             else:
                 break
 
-        start = df_stonk2.loc[df_stonk2['date'] == s2s_start_date + timedelta(days=adj_start)].index[0]
+        start = df_stonk2.loc[df_stonk2['date'] == s2s_start_date + timedelta(days=adj_start)].index[0] + 1
 
 
         adj_end = 0
