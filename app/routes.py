@@ -53,32 +53,34 @@ def index():
             df_stonk['date'][date] = datetime.strptime(df_stonk['date'][date], '%Y-%m-%d').date()
 
         # get bitcoin data
-        dir_list = os.listdir('app/csv/')
-        btc_name = '2021-02-02'
-        # btc_name = str(datetime.now())[:10]
+        # dir_list = os.listdir('app/csv/')
+        # btc_name = '2021-02-02'
+        # # btc_name = str(datetime.now())[:10]
 
-        if len(dir_list) == 0 or btc_name + '.csv'!=dir_list[0]:
-            # for filename in os.listdir('app/csv/'):
-                # os.remove(f'app/csv/{filename}')
+        # if len(dir_list) == 0 or btc_name + '.csv'!=dir_list[0]:
+        #     # for filename in os.listdir('app/csv/'):
+        #         # os.remove(f'app/csv/{filename}')
 
-            btc_alpha = requests.get(f'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey={api_key}')
-            btc_df = btc_alpha.json()
-            btc_data = pd.DataFrame.from_dict(btc_df['Time Series (Digital Currency Daily)'],orient='index')
-            btc_data.reset_index(inplace=True)
-            btc_data.rename(columns=lambda x: x.replace(' ', '').lower(), inplace=True)
-            btc_data.rename(columns={"index":"date", '2a.high(usd)':'high', '3b.low(usd)':'low'}, inplace=True)
-            btc_data.drop(columns=['1a.open(usd)', '1b.open(usd)', '2b.high(usd)',
-                '3a.low(usd)', '4a.close(usd)', '4b.close(usd)',
-                '5.volume', '6.marketcap(usd)'], axis=1, inplace=True)
-            for num in ['high', 'low']:
-                btc_data[num] = btc_data[num].astype(float, copy=True)
-            # btc_data['btc_average'] = btc_data[['high', 'low']].mean(axis=1)
-            btc_data.drop(columns=['high', 'low'], axis=1, inplace=True)
-            btc_data.to_csv(rf'app/csv/{btc_name}.csv')
-            df_btc = btc_data
-        else:
-            get_df_btc = pd.read_csv(f'app/csv/{btc_name}.csv')
-            df_btc = get_df_btc
+        #     btc_alpha = requests.get(f'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey={api_key}')
+        #     btc_df = btc_alpha.json()
+        #     btc_data = pd.DataFrame.from_dict(btc_df['Time Series (Digital Currency Daily)'],orient='index')
+        #     btc_data.reset_index(inplace=True)
+        #     btc_data.rename(columns=lambda x: x.replace(' ', '').lower(), inplace=True)
+        #     btc_data.rename(columns={"index":"date", '2a.high(usd)':'high', '3b.low(usd)':'low'}, inplace=True)
+        #     btc_data.drop(columns=['1a.open(usd)', '1b.open(usd)', '2b.high(usd)',
+        #         '3a.low(usd)', '4a.close(usd)', '4b.close(usd)',
+        #         '5.volume', '6.marketcap(usd)'], axis=1, inplace=True)
+        #     for num in ['high', 'low']:
+        #         btc_data[num] = btc_data[num].astype(float, copy=True)
+        #     # btc_data['btc_average'] = btc_data[['high', 'low']].mean(axis=1)
+        #     btc_data.drop(columns=['high', 'low'], axis=1, inplace=True)
+        #     btc_data.to_csv(rf'app/csv/{btc_name}.csv')
+        #     df_btc = btc_data
+        # else:
+        #     get_df_btc = pd.read_csv(f'app/csv/{btc_name}.csv')
+        #     df_btc = get_df_btc
+
+        df_btc = pd.read_csv('app/csv/btc.csv')
 
         for date in range(len(df_btc['date'])):
             df_btc['date'][date] = datetime.strptime(df_btc['date'][date], '%Y-%m-%d').date()
