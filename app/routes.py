@@ -54,7 +54,7 @@ def index():
 
         # get bitcoin data
         dir_list = os.listdir('app/csv/')
-        btc_name = '2021-02-01'
+        btc_name = '2021-02-02'
         # btc_name = str(datetime.now())[:10]
 
         if len(dir_list) == 0 or btc_name + '.csv'!=dir_list[0]:
