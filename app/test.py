@@ -15,4 +15,4 @@ update_alpha = requests.get(f'https://www.alphavantage.co/query?function=CURRENC
 update_df = update_alpha.json()
 df_update = pd.DataFrame.from_dict(update_df['Realtime Currency Exchange Rate'],orient='index')
 df_btc.loc[100] = [100, str(datetime.now())[:10], float(df_update[0][4])]
-df_btc.to_csv(rf'test/btc2.csv')
+df_btc.to_csv(rf'btc2.csv')
