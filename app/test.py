@@ -7,7 +7,8 @@ from datetime import datetime
 
 api_key = os.environ['SECRET_KEY']
 
-df_btc = pd.DataFrame(columns=['date', 'close_price'])
+# df_btc = pd.DataFrame(columns=['date', 'close_price'])
+df_btc = pd.read_csv('csv/btc.csv')
 
 update_alpha = requests.get(f'https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=USD&apikey={api_key}')
 update_df = update_alpha.json()
