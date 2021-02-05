@@ -4,7 +4,7 @@ import requests, os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime,
+from datetime import datetime
 from dotenv import load_dotenv
 
 df_btc = pd.read_csv(f'app/csv/btc.csv')
