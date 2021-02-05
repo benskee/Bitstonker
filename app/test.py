@@ -5,7 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-api_key = os.environ['SECRET_KEY']
+api_key = 'Y82V5GOAOYCOZ1R1'
+# api_key = os.environ['SECRET_KEY']
 
 # df_btc = pd.DataFrame(columns=['date', 'close_price'])
 df_btc = pd.read_csv('csv/btc.csv')
