@@ -54,8 +54,11 @@ def index():
             df_stonk['date'][date] = datetime.strptime(df_stonk['date'][date], '%Y-%m-%d').date()
 
         # df_btc = pd.read_csv('app/csv/btc.csv')
-        cnx = create_engine('postgres://jqfaanmd:xkQ9pPvrHz2cNeTxRcfrSxy6Ayq_uN_j@ziggy.db.elephantsql.com:5432/jqfaanmd').connect()
+        cnx = create_engine('postgres://jqfaanmd:xkQ9pPvrHz2cNeTxRcfrSxy6Ayq_uN_j@ziggy.db.elephantsql.com:5432/jqfaanmd')
+        conn = cnx.connect()
         df_btc = pd.read_sql_table('user', cnx)
+        conn.close()
+        cnx.dispose()
         df_btc.rename(columns={'price':'close_price'}, inplace=True)
 
         for date in range(len(df_btc['date'])):

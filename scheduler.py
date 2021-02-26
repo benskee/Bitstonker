@@ -1,15 +1,11 @@
 from app import app, db
-
 import requests, os
 from app.models import User
 from flask import request
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import datetime
 from dotenv import load_dotenv
-
-# df_btc = pd.read_csv(f'app/csv/btc.csv')
 
 api_key = os.getenv('SECRET_KEY')
 update_alpha = requests.get(f'https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=USD&apikey={api_key}')
