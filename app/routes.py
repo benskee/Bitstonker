@@ -64,7 +64,7 @@ def index():
         for date in range(len(df_btc['date'])):
             df_btc['date'][date] = datetime.strptime(df_btc['date'][date], '%Y-%m-%d').date()
         df_btc.set_index('date', inplace=True)
-        
+
         #combine charts and account for stonk market days
         df_stonk.set_index('date', inplace=True)
         df_btc['stonk_close'] = df_stonk['stonk_close']
@@ -114,7 +114,7 @@ def index():
             figure, ax1 = plt.subplots(figsize=(15, 12))
             plt.grid(True)
             ax1.plot(df_btc.date[start:end+1], df_btc.btc_price[start:end+1].fillna(method='ffill'), label='Bitcoin', color='orange')
-            plt.title(f'{stonk} Daily stonk Price in Bitcoin', fontsize=18)
+            plt.title(f'{stonk} Daily Price in Bitcoin', fontsize=18)
             plt.ylabel(f'Price in Ten Thousand Sats (.0001 Bitcoin)', fontsize=16)
             ax2 = plt.twinx()
             ax2.set_ylabel(f'Price in Dollars', fontsize=16)
@@ -130,7 +130,7 @@ def index():
             plt.subplots(figsize=(15, 12))
             plt.grid(True)
             plt.plot(df_btc.date[start:end+1], df_btc.btc_price[start:end+1].fillna(method='ffill'), color='orange')
-            plt.title(f'{stonk} Daily stonk Price in Bitcoin', fontsize=18)
+            plt.title(f'{stonk} Daily Price in Bitcoin', fontsize=18)
             plt.ylabel('Price in Ten Thousand Sats (.0001 Bitcoin)', fontsize=16)
             plt.legend(['Bitcoin'], loc=2)
             plt.savefig(f'app/static/{graph}');
