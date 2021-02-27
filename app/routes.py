@@ -53,17 +53,18 @@ def index():
         for date in range(len(df_stonk['date'])):
             df_stonk['date'][date] = datetime.strptime(df_stonk['date'][date], '%Y-%m-%d').date()
 
-        # df_btc = pd.read_csv('app/csv/btc.csv')
-        cnx = create_engine('postgres://jqfaanmd:xkQ9pPvrHz2cNeTxRcfrSxy6Ayq_uN_j@ziggy.db.elephantsql.com:5432/jqfaanmd')
+        # Import Database and create BTC dataframe
+        SQL_URI = os.environ['SQLALCHEMY_DATABASE_URI']
+        cnx = create_engine(SQL_URI)
         conn = cnx.connect()
         df_btc = pd.read_sql_table('user', cnx)
         conn.close()
         cnx.dispose()
         df_btc.rename(columns={'price':'close_price'}, inplace=True)
-
         for date in range(len(df_btc['date'])):
             df_btc['date'][date] = datetime.strptime(df_btc['date'][date], '%Y-%m-%d').date()
         df_btc.set_index('date', inplace=True)
+        
         #combine charts and account for stonk market days
         df_stonk.set_index('date', inplace=True)
         df_btc['stonk_close'] = df_stonk['stonk_close']
