@@ -12,7 +12,7 @@ update_alpha = requests.get(f'https://www.alphavantage.co/query?function=CURRENC
 update_df = update_alpha.json()
 df_update = pd.DataFrame.from_dict(update_df['Realtime Currency Exchange Rate'],orient='index')
 date = str(datetime.now().date())
-price = df_update[0][4]
+price = str(format(float(df_update[0][4]), '.2f'))
 day_0 = datetime.strptime("2021-02-24", '%Y-%m-%d').date()
 id = 1888 + (datetime.now().date() - day_0).days
 u = User(id=id, date=date, price=price)
