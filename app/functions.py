@@ -13,7 +13,7 @@ def remove_image(name):
 
 def date_df(df):
     for date in range(len(df['date'])):
-            df['date'][date] = datetime.strptime(df['date'][date], '%Y-%m-%d').date()
+            df.loc[date, "date"] = datetime.strptime(df.loc[date, "date"], '%Y-%m-%d').date()
 
 def get_stonk_df(stonk):
     api_key = os.environ['SECRET_KEY']
@@ -35,7 +35,7 @@ def stonk_start(df_1, df_2):
     df_1.drop(columns=['index'], axis=1, inplace=True)
     return df_1
 
-def generate_price(df_1, name):
+def generate_price(df_1):
     price_list = []
     for date in df_1.index:
         if date > 3 and np.isnan(df_1.stonk_close[date]) == True:
@@ -48,8 +48,17 @@ def generate_price(df_1, name):
         elif df_1.stonk_close[date]:        
             price = float(format(df_1.stonk_close[date]*10000/float(df_1.close_price[date]), '.8f'))
             price_list.append(price)
-    df_1[f'{name}_price'] = price_list
+    df_1['btc_price'] = price_list
     return df_1
+
+def generate_stonk_price(df):
+    stonk2_price_list = []
+    for date in df.index:
+        if df.stonk_close[date]:        
+            stonk2_price = float(format(df.stonk_close[date]/df.stonk2_close[date], '.8f'))
+            stonk2_price_list.append(stonk2_price)
+    df['stonk2_price'] = stonk2_price_list
+    return df
 
 def validate_start_end(df, start_date, end_date):
     if start_date:
@@ -101,7 +110,7 @@ def generate_graph(df, start, end, name, text_1, text_2, text_3):
     plt.plot(df.date[start:end+1], df[(f'{name}_price')][start:end+1].fillna(method='ffill'), color='orange')
     plt.title(text_1, fontsize=18)
     plt.ylabel(text_2, fontsize=16)
-    plt.legend(text_3, loc=2)
+    plt.legend([text_3], loc=2, fontsize=12)
     graph = f'{name}_{str(datetime.now())[-5:]}.png'
     plt.savefig(f'app/static/{graph}');
     return graph
@@ -138,3 +147,16 @@ def create_df_btc():
     date_df(df_btc)
     df_btc.set_index('date', inplace=True)
     return df_btc
+
+def check_stonks(stonk1, stonk2):
+    if not stonk1 and not stonk2:
+        stonk1 = "COKE"
+        stonk2 = "PEP"
+
+    elif not stonk1:
+        stonk1="SPY"
+
+    elif not stonk2:
+        stonk2="GBTC"
+    return (stonk1, stonk2)
+

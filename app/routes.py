@@ -20,8 +20,9 @@ def before_request():
 class Index(MethodView):
     def get(self):
         graph_display = "none"
+        graph = 'basic.png'
         
-        return render_template('index.html', graph_display=graph_display)
+        return render_template('index.html', graph=graph, graph_display=graph_display)
         
     def post(self):
         stonk = request.form.get('stonk').upper()
@@ -43,7 +44,7 @@ class Index(MethodView):
         if df_stonk.index[len(df_stonk)-1] > df_btc['date'][0]:
             df_btc = stonk_start(df_btc, df_stonk)
     
-        df_btc = generate_price(df_btc, 'btc')
+        df_btc = generate_price(df_btc)
 
         start, end = validate_start_end(df_btc, start_date, end_date)
 
@@ -70,13 +71,16 @@ class Index(MethodView):
         usd_end_price = rnd(df_btc.stonk_close[end])
         btc_end_price = rnd(df_btc.btc_price[end])
         usd_roi = rnd(usd_end_price - usd_start_price)
-        usd_roi_pct = "{0:.2%}".format(usd_roi/usd_start_price)
         btc_roi = rnd(btc_end_price - btc_start_price)
+        usd_roi_pct = "{0:.2%}".format(usd_roi/usd_start_price)
         btc_roi_pct = "{0:.2%}".format(btc_roi/btc_start_price)
+
+        context = dict(stonk=stonk, graph=graph, graph_display=graph_display, dollar_display=dollar_display,
+        usd_start_price = usd_start_price, btc_start_price = btc_start_price, usd_end_price = usd_end_price,
+        btc_end_price = btc_end_price, usd_roi = usd_roi, btc_roi = btc_roi, usd_roi_pct = usd_roi_pct,
+        btc_roi_pct = btc_roi_pct)
         
-        return render_template('index.html', stonk=stonk, graph=graph, graph_display=graph_display, 
-        usd_start_price=usd_start_price, btc_start_price=btc_start_price, usd_end_price=usd_end_price, btc_end_price=btc_end_price,
-        usd_roi=usd_roi, usd_roi_pct=usd_roi_pct, btc_roi=btc_roi, btc_roi_pct=btc_roi_pct, dollar_display=dollar_display)
+        return render_template('index.html', **context)
 app.add_url_rule('/', view_func=Index.as_view('index'))
 
 
@@ -84,168 +88,72 @@ app.add_url_rule('/', view_func=Index.as_view('index'))
 def about():
     return render_template("about.html")
 
-@app.route('/s2s', methods=["GET", "POST"])
-def s2s():
-    if request.method == "GET":
-        stonk1 = ""
-        stonk2 = ""
-        # df_btc = ""
-        s2s_graph = ""
+class S2s(MethodView):
+
+    def get(self):
+        s2s_graph = "basic.png"
         s2s_graph_display = "none"
-        
-        
+        context = dict(s2s_graph=s2s_graph, s2s_graph_display=s2s_graph_display)
 
-    if request.method == "POST":
-        stonk1 = request.form.get('stonk1').upper()
-        stonk2 = request.form.get('stonk2').upper()
-        s2s_start_date = request.form.get('s2s_start_date')
-        s2s_end_date = request.form.get('s2s_end_date')
+        return render_template('s2s.html', **context)
+        
+        
+    def post(self):
+        req = request.form.get
+        stonk1 = req('stonk1')
+        stonk2 = req('stonk2')
+        s2s_start_date = req('s2s_start_date')
+        s2s_end_date = req('s2s_end_date')
         s2s_graph_display = "block"
-        s2s_check = request.form.get('s2s_dollar_check')
-        dollar_display = "none"
-        # df_btc = ""
+        s2s_check = req('s2s_dollar_check')
 
-        if not stonk1 and not stonk2:
-            stonk1 = "COKE"
-            stonk2 = "PEP"
+        stonk1, stonk2 = check_stonks(stonk1, stonk2)
 
-        elif not stonk1:
-            stonk1="SPY"
-
-        elif not stonk2:
-            stonk2="GBTC"
-
-        #get stonk dataframe
-        api_key = os.environ['SECRET_KEY']
-        stonk_alpha = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={stonk1}&outputsize=full&apikey={api_key}')
-        this_df = stonk_alpha.json()
-        df_stonk = pd.DataFrame.from_dict(this_df['Time Series (Daily)'],orient='index')
-
-        #reduce stonk data to close price
-        df_stonk.reset_index(inplace=True)
-        df_stonk.rename(columns={'index':'date', '5. adjusted close': 'stonk_close'}, inplace=True)
-        df_stonk.drop(columns=['1. open', '2. high', '3. low', '4. close', '6. volume', '7. dividend amount','8. split coefficient'], axis=1, inplace=True)
-        for num in ['stonk_close']:
-            df_stonk[num] = df_stonk[num].astype(float, copy=True)
-        for date in range(len(df_stonk['date'])):
-            df_stonk['date'][date] = datetime.strptime(df_stonk['date'][date], '%Y-%m-%d').date()
-
-        stonk2_alpha = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={stonk2}&outputsize=full&apikey={api_key}')
-        this2_df = stonk2_alpha.json()
-        df_stonk2 = pd.DataFrame.from_dict(this2_df['Time Series (Daily)'],orient='index')
-        df_stonk2.reset_index(inplace=True)
-        df_stonk2.rename(columns={'index':'date', '5. adjusted close': 'stonk2_close'}, inplace=True)
-        df_stonk2.drop(columns=['1. open', '2. high', '3. low', '4. close', '6. volume', '7. dividend amount','8. split coefficient'], axis=1, inplace=True)
-        for num in ['stonk2_close']:
-            df_stonk2[num] = df_stonk2[num].astype(float, copy=True)
-        for date in range(len(df_stonk2['date'])):
-            df_stonk2['date'][date] = datetime.strptime(df_stonk2['date'][date], '%Y-%m-%d').date()
-
-        #combine charts and account for stock market days
-        df_stonk2.set_index('date', inplace=True)
-        df_stonk.set_index('date', inplace=True)
+        df_stonk = get_stonk_df(stonk1)
+        df_stonk2 = get_stonk_df(stonk2)
+        df_stonk2.rename(columns={'stonk_close': 'stonk2_close'}, inplace=True)
         df_stonk2['stonk_close'] = df_stonk['stonk_close']
-        df_stonk2 = df_stonk2.reset_index()
+        df_stonk2 = df_stonk2.sort_index(ascending=True, axis=0)
+        df_stonk2.reset_index(inplace=True)
+        generate_stonk_price(df_stonk2)
+        start, end = validate_start_end(df_stonk2, s2s_start_date, s2s_end_date)
 
-        #get stock price in bitcoin
-        stonk2_price_list = []
-        for date in df_stonk2.index:
-            if df_stonk2.stonk_close[date]:        
-                stonk2_price = float(format(df_stonk2.stonk_close[date]/df_stonk2.stonk2_close[date], '.8f'))
-                stonk2_price_list.append(stonk2_price)
-        df_stonk2['stonk2_price'] = stonk2_price_list
+        start = adjust_start(df_stonk2, start)
+        end = adjust_end(df_stonk2, end)
 
-        if s2s_start_date:
-            s2s_start_date = datetime.strptime(s2s_start_date, '%Y-%m-%d').date()
-        else:
-            s2s_start_date = df_stonk2['date'][len(df_stonk2)-1]
+        remove_image("stonk2")
 
-        if not s2s_end_date:
-            s2s_end_date = df_stonk2['date'][0]
-        else:
-            s2s_end_date = datetime.strptime(s2s_end_date, '%Y-%m-%d').date()
-
-        if s2s_start_date > s2s_end_date:
-            s2s_start_date, s2s_end_date = s2s_end_date, s2s_start_date
-
-        if s2s_start_date < df_stonk2['date'][len(df_stonk2)-1]:
-            s2s_start_date = df_stonk2['date'][len(df_stonk2)-1]
-
-        if s2s_end_date > df_stonk2['date'][0]:
-            s2s_end_date = df_stonk2['date'][0]
-
-        adj_start = 0
-
-        for day in range(1, len(df_stonk2)-1):
-            if len(df_stonk2.loc[df_stonk2['date'] == s2s_start_date + timedelta(days=adj_start)]) < 1:
-                adj_start += 1 
-            else:
-                break
-
-        start = df_stonk2.loc[df_stonk2['date'] == s2s_start_date + timedelta(days=adj_start)].index[0]
-
-
-        adj_end = 0
-
-        for day in range(1, len(df_stonk2)-1):
-            if len(df_stonk2.loc[df_stonk2['date'] == s2s_end_date + timedelta(days=adj_end)]) < 1:
-                adj_end += 1 
-            else:
-                break
-
-        end = df_stonk2.loc[df_stonk2['date'] == s2s_end_date + timedelta(days=adj_end)].index[0]
-        
-        remove_image("s2s")
-
-        # generate graph 
-        s2s_graph = f's2s_{str(datetime.now())[-5:]}.png'
+        s2s_graph_display = 'block'
+        text_1 = f'{stonk1} Daily Price in {stonk2}'
+        text_2 = f'Price in Shares of {stonk2}'
+        text_3 = 'Stonk by Stonk Price'
         if s2s_check != None: 
             dollar_display = "block"
-            figure, ax1 = plt.subplots(figsize=(15, 12))
-            plt.grid(True)
-            ax1.plot(df_stonk2.date[end:start+1], df_stonk2.stonk2_price[end:start+1].fillna(method='ffill'), label='Stonk by Stonk', color='orange')
-            plt.title(f'{stonk1} Daily Price in {stonk2}', fontsize=18)
-            plt.ylabel(f'Price in shares of {stonk2}', fontsize=16)
-            ax2 = plt.twinx()
-            ax2.set_ylabel(f'Price in Dollars', fontsize=16)
-            ax2.plot(df_stonk2.date[end:start+1], df_stonk2.stonk_close[end:start+1].fillna(method='ffill'), label='Dollars', color='green')
-            ax2.tick_params(axis='y')
-            lines_1, labels_1 = ax1.get_legend_handles_labels()
-            lines_2, labels_2 = ax2.get_legend_handles_labels()
-            lines = lines_1 + lines_2
-            labels = labels_1 + labels_2
-            ax1.legend(lines, labels, loc=2)
-            plt.savefig(f'app/static/{s2s_graph}');
+            s2s_graph = generate_dollar_graph(df_stonk2, start, end, 'stonk2', text_1, text_2, text_3)
+            
         else:
-            plt.subplots(figsize=(15, 12))
-            plt.grid(True)
-            plt.plot(df_stonk2.date[end:start], df_stonk2.stonk2_price[end:start].fillna(method='ffill'), color='orange')
-            plt.title(f'{stonk1} Daily Price in {stonk2}', fontsize=18)
-            plt.ylabel(f'Price in Shares of {stonk2}', fontsize=16)
-            plt.legend(['Stonk by Stonk Price'], loc=2)
-            plt.savefig(f'app/static/{s2s_graph}');
+            dollar_display = "none"
+            s2s_graph = generate_graph(df_stonk2, start, end, 'stonk2', text_1, text_2, text_3)
 
-        # populate table
-        stonk1_start_price = round(df_stonk2.stonk_close[start - adj_start], 2)
-        stonk1_end_price = round(df_stonk2.stonk_close[end + adj_end], 2)
-        stonk1_roi = round(stonk1_end_price - stonk1_start_price, 2)
+        stonk1_start_price = rnd(df_stonk2.stonk_close[start])
+        stonk1_end_price = rnd(df_stonk2.stonk_close[end])
+        stonk1_roi = rnd(stonk1_end_price - stonk1_start_price)
         stonk1_roi_pct = "{0:.2%}".format(stonk1_roi/stonk1_start_price)
-
-        stonk2_start_price = round(df_stonk2.stonk2_close[start - adj_start], 2)
-        stonk2_end_price = round(df_stonk2.stonk2_close[end + adj_end], 2)
-        stonk2_roi = round(stonk2_end_price - stonk2_start_price, 2)
+        stonk2_start_price = rnd(df_stonk2.stonk2_close[start])
+        stonk2_end_price = rnd(df_stonk2.stonk2_close[end])
+        stonk2_roi = rnd(stonk2_end_price - stonk2_start_price)
         stonk2_roi_pct = "{0:.2%}".format(stonk2_roi/stonk2_start_price)
-
-        s2s_start_price = round(df_stonk2.stonk2_price[start - adj_start], 2)
-        s2s_end_price = round(df_stonk2.stonk2_price[end + adj_end], 2)
-        s2s_roi = round(s2s_end_price - s2s_start_price, 2)
+        s2s_start_price = rnd(df_stonk2.stonk2_price[start])
+        s2s_end_price = rnd(df_stonk2.stonk2_price[end])
+        s2s_roi = rnd(s2s_end_price - s2s_start_price)
         s2s_roi_pct = "{0:.2%}".format(s2s_roi/s2s_start_price)
 
+        context = dict(stonk1=stonk1, stonk2=stonk2, s2s_graph=s2s_graph, s2s_graph_display=s2s_graph_display, 
+        stonk1_start_price=stonk1_start_price, stonk1_end_price=stonk1_end_price, stonk1_roi=stonk1_roi, 
+        stonk1_roi_pct=stonk1_roi_pct, stonk2_start_price=stonk2_start_price, stonk2_end_price=stonk2_end_price,
+        stonk2_roi=stonk2_roi, stonk2_roi_pct=stonk2_roi_pct, s2s_start_price=s2s_start_price, 
+        s2s_end_price=s2s_end_price, s2s_roi=s2s_roi, s2s_roi_pct=s2s_roi_pct, dollar_display=dollar_display)
 
-        return render_template('s2s.html', stonk1=stonk1, stonk2=stonk2, s2s_graph=s2s_graph, 
-        s2s_graph_display=s2s_graph_display, dollar_display=dollar_display, 
-        stonk1_start_price=stonk1_start_price, stonk1_end_price=stonk1_end_price, stonk1_roi=stonk1_roi, stonk1_roi_pct=stonk1_roi_pct, 
-        stonk2_start_price=stonk2_start_price, stonk2_end_price=stonk2_end_price, stonk2_roi=stonk2_roi, stonk2_roi_pct=stonk2_roi_pct, 
-        s2s_start_price=s2s_start_price, s2s_end_price=s2s_end_price, s2s_roi=s2s_roi, s2s_roi_pct=s2s_roi_pct)
+        return render_template('s2s.html', **context)
 
-    return render_template('s2s.html', stonk1=stonk1, stonk2=stonk2, s2s_graph=s2s_graph, s2s_graph_display=s2s_graph_display)
+app.add_url_rule('/s2s', view_func=S2s.as_view('s2s'))
