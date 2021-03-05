@@ -4,12 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from sqlalchemy import create_engine
-
-
-def remove_image(name):
-    for filename in os.listdir('app/static/'):
-        if filename.startswith(name):
-            os.remove('app/static/' + filename)
+from flask import render_template, flash
+from app import app
 
 def date_df(df):
     for date in range(len(df['date'])):
@@ -19,6 +15,8 @@ def get_stonk_df(stonk):
     api_key = os.environ['SECRET_KEY']
     stonk_alpha = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={stonk}&outputsize=full&apikey={api_key}')
     this_df = stonk_alpha.json()
+    if 'Error Message' in this_df:
+        return this_df
     df_stonk = pd.DataFrame.from_dict(this_df['Time Series (Daily)'],orient='index')
     df_stonk.reset_index(inplace=True)
     df_stonk.rename(columns={'index':'date', '5. adjusted close': 'stonk_close'}, inplace=True)
@@ -28,6 +26,30 @@ def get_stonk_df(stonk):
     date_df(df_stonk)
     df_stonk.set_index('date', inplace=True)
     return df_stonk
+
+def stonk_error(stonk):
+    api_key = os.environ['SECRET_KEY']
+    error_alpha = requests.get(f'https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={stonk}&apikey={api_key}' )
+    this_error = error_alpha.json()
+    if len(this_error["bestMatches"]) < 1:
+        flash(f'{stonk} is not a recognized ticker.')
+    else:
+        guess = this_error["bestMatches"][0]["1. symbol"]
+        flash(f"{stonk} is not a recognized ticker. Did you mean {guess}?")
+    context= dict(graph="basic.png", graph_display="none")
+    return context
+
+def create_df_btc():
+    SQL_URI = os.environ['SQLALCHEMY_DATABASE_URI']
+    cnx = create_engine(SQL_URI)
+    conn = cnx.connect()
+    df_btc = pd.read_sql_table('user', cnx)
+    conn.close()
+    cnx.dispose()
+    df_btc.rename(columns={'price':'close_price'}, inplace=True)
+    date_df(df_btc)
+    df_btc.set_index('date', inplace=True)
+    return df_btc
 
 def stonk_start(df_1, df_2):
     df_1 = df_1.loc[df_1['date'] > df_2.index[len(df_2)-1]]
@@ -51,21 +73,11 @@ def generate_price(df_1):
     df_1['btc_price'] = price_list
     return df_1
 
-def generate_stonk_price(df):
-    stonk2_price_list = []
-    for date in df.index:
-        if df.stonk_close[date]:        
-            stonk2_price = float(format(df.stonk_close[date]/df.stonk2_close[date], '.8f'))
-            stonk2_price_list.append(stonk2_price)
-    df['stonk2_price'] = stonk2_price_list
-    return df
-
 def validate_start_end(df, start_date, end_date):
     if start_date:
         start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
     else:
         start_date = df['date'][0]
-
     if not end_date:
         end_date = df['date'][len(df)-1]
     else:
@@ -79,11 +91,39 @@ def validate_start_end(df, start_date, end_date):
 
     if end_date > df['date'][len(df)-1]:
         end_date = df['date'][len(df)-1]
-
-    start = df.loc[df['date'] == start_date].index[0]
-    end = df.loc[df['date'] == end_date].index[0]  
+    if len(df.loc[df['date'] == start_date].index) < 1:
+        for i in range(4):
+            if len(df.loc[df['date'] == start_date + timedelta(days = i)].index) > 0:
+                start_date = start_date + timedelta(days = i)
+                break
+    if len(df.loc[df['date'] == start_date].index) < 1:
+        start = end = ""
+        return (start,end)
     
+    start = df.loc[df['date'] == start_date].index[0]
+
+    if len(df.loc[df['date'] == end_date].index) < 1:
+        for i in range(4):
+            if len(df.loc[df['date'] == end_date - timedelta(days = i)].index) > 0:
+                end_date = end_date - timedelta(days = i)
+                break
+
+    if len(df.loc[df['date'] == end_date].index) < 1:
+        start = end = ""
+        return (start,end)
+
+    end = df.loc[df['date'] == end_date].index[0]
     return (start, end)
+
+def date_error():
+    flash(f"Invalid dates. Please try again.")
+    context= dict(graph="basic.png", graph_display="none")
+    return context
+
+def remove_image(name):
+    for filename in os.listdir('app/static/'):
+        if filename.startswith(name):
+            os.remove('app/static/' + filename)
 
 def generate_dollar_graph(df, start, end, name, text_1, text_2, text_3):
     figure, ax1 = plt.subplots(figsize=(15, 12))
@@ -136,17 +176,20 @@ def adjust_end(df, end):
 def rnd(entry):
     return (round(entry, 2))
 
-def create_df_btc():
-    SQL_URI = os.environ['SQLALCHEMY_DATABASE_URI']
-    cnx = create_engine(SQL_URI)
-    conn = cnx.connect()
-    df_btc = pd.read_sql_table('user', cnx)
-    conn.close()
-    cnx.dispose()
-    df_btc.rename(columns={'price':'close_price'}, inplace=True)
-    date_df(df_btc)
-    df_btc.set_index('date', inplace=True)
-    return df_btc
+def populate_table(df, start, end):
+    usd_start_price = rnd(df.stonk_close[start])
+    btc_start_price = rnd(df.btc_price[start])
+    usd_end_price = rnd(df.stonk_close[end])
+    btc_end_price = rnd(df.btc_price[end])
+    usd_roi = rnd(usd_end_price - usd_start_price)
+    btc_roi = rnd(btc_end_price - btc_start_price)
+    usd_roi_pct = "{0:.2%}".format(usd_roi/usd_start_price)
+    btc_roi_pct = "{0:.2%}".format(btc_roi/btc_start_price)
+
+    context_b = dict(usd_start_price = usd_start_price, btc_start_price = btc_start_price,
+    usd_end_price = usd_end_price, btc_end_price = btc_end_price, usd_roi = usd_roi, 
+    btc_roi = btc_roi, usd_roi_pct = usd_roi_pct, btc_roi_pct = btc_roi_pct, graph_display="block")
+    return context_b
 
 def check_stonks(stonk1, stonk2):
     if not stonk1 and not stonk2:
@@ -160,3 +203,41 @@ def check_stonks(stonk1, stonk2):
         stonk2="GBTC"
     return (stonk1, stonk2)
 
+def generate_stonk_price(df):
+    stonk2_price_list = []
+    for date in df.index:
+        if df.stonk_close[date]:        
+            stonk2_price = float(format(df.stonk_close[date]/df.stonk2_close[date], '.8f'))
+            stonk2_price_list.append(stonk2_price)
+    df['stonk2_price'] = stonk2_price_list
+    return df
+
+def combine_stonks(df_stonk, df_stonk2):
+    df_stonk2.rename(columns={'stonk_close': 'stonk2_close'}, inplace=True)
+    df_stonk2['stonk_close'] = df_stonk['stonk_close']
+    df_stonk2 = df_stonk2.sort_index(ascending=True, axis=0)
+    df_stonk2.reset_index(inplace=True)
+    generate_stonk_price(df_stonk2)
+    return df_stonk2
+
+def s2s_populate_table(df_stonk2, start, end):
+    stonk1_start_price = rnd(df_stonk2.stonk_close[start])
+    stonk1_end_price = rnd(df_stonk2.stonk_close[end])
+    stonk1_roi = rnd(stonk1_end_price - stonk1_start_price)
+    stonk1_roi_pct = "{0:.2%}".format(stonk1_roi/stonk1_start_price)
+    stonk2_start_price = rnd(df_stonk2.stonk2_close[start])
+    stonk2_end_price = rnd(df_stonk2.stonk2_close[end])
+    stonk2_roi = rnd(stonk2_end_price - stonk2_start_price)
+    stonk2_roi_pct = "{0:.2%}".format(stonk2_roi/stonk2_start_price)
+    start_price = rnd(df_stonk2.stonk2_price[start])
+    end_price = rnd(df_stonk2.stonk2_price[end])
+    roi = rnd(end_price - start_price)
+    roi_pct = "{0:.2%}".format((df_stonk2.stonk2_price[end] - df_stonk2.stonk2_price[start])/df_stonk2.stonk2_price[start])
+
+    context_b = dict(graph_display="block", stonk1_start_price=stonk1_start_price, 
+    stonk1_end_price=stonk1_end_price, stonk1_roi=stonk1_roi, stonk1_roi_pct=stonk1_roi_pct, 
+    stonk2_start_price=stonk2_start_price, stonk2_end_price=stonk2_end_price,
+    stonk2_roi=stonk2_roi, stonk2_roi_pct=stonk2_roi_pct, start_price=start_price, 
+    end_price=end_price, roi=roi, roi_pct=roi_pct)
+
+    return context_b

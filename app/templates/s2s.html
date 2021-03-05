@@ -8,24 +8,42 @@
     <div class="form-group"><input type="text" name="stonk2" class="form-control" style="margin:0px 10px"
             placeholder="Type your second stonk"></div>
     <div class="form-group">
-        <label for="s2s_start_date" style="margin:0px 10px">Start Date: </label>
-        <input type="date" name="s2s_start_date">
+        <label for="start_date" style="margin:10px 10px">Start Date: </label>
+        <input type="date" name="start_date">
     </div>
     <div class="form-group">
-        <label for="s2s_end_date" style="margin:0px 15px 0px 10px">End Date: </label>
-        <input type="date" name="s2s_end_date" style="margin:0px 15px 0px 0px">
+        <label for="end_date" style="margin:0px 15px 0px 10px">End Date: </label>
+        <input type="date" name="end_date" style="margin:0px 15px 0px 0px">
     </div>
     <div class="form-group">
-        <label for="s2s_dollar_check" style="margin:0px 5px 0px 10px">Include dollar price: </label>
-        <input type="checkbox" name="s2s_dollar_check" id='s2s_dollar_check'>
+        <label for="dollar_check" style="margin:0px 5px 0px 10px">Include dollar price: </label>
+        <input type="checkbox" name="dollar_check" id='dollar_check'>
     </div>
     <div class="form-group">
         <button type="submit" class="btn btn-info" style="margin:10px 10px">Submit</button>
     </div>
 </form>
+<div class="form-group">
+    <br>
+    <a class="btn btn-secondary btn-sm" data-toggle="collapse" style="margin:0px" href="#bitstonker_explain" role="button"
+        aria-expanded="false" aria-controls="bitstonker_explain">
+        HELP
+    </a>
+</div class="form-group">
 
-<div style="display:{{s2s_graph_display}}">
-    <img src="{{url_for('static', filename=s2s_graph)}}" class="img-fluid" alt="stonky stonk graph">
+<div class="collapse" id="bitstonker_explain">
+    <div class="card card-body">
+        <p>The stonk by stonk tool does not have anything to do with Bitcoin directly but is useful to compare
+        the relative prices of stonks. This may come in handy for rebalancing portfolios or pair trading.
+        Type in the ticker symbols for the stonks you would like to compare. The graph will show the first
+        stonk divided by the second stonk. The "include dollar price" checkbox will have the graph include the
+        first stonk's performance priced in dollars as well as the comparative price. If you need more help head over to the <a
+        href="{{ url_for('about') }}">about page</a>.</p>
+    </div>
+</div>
+
+<div style="display:{{graph_display}}">
+    <img src="{{url_for('static', filename=graph)}}" class="img-fluid" alt="stonky stonk graph">
     <table class="table table-striped">
         <thead>
             <tr>
@@ -53,10 +71,10 @@
             </tr>
             <tr>
                 <th scope="row">{{stonk1}} Priced in {{stonk2}}</th>
-                <td>{{s2s_start_price}}</td>
-                <td>{{s2s_end_price}}</td>
-                <td>{{s2s_roi}}</td>
-                <td>{{s2s_roi_pct}}</td>
+                <td>{{start_price}}</td>
+                <td>{{end_price}}</td>
+                <td>{{roi}}</td>
+                <td>{{roi_pct}}</td>
             </tr>
         </tbody>
     </table>
@@ -72,10 +90,10 @@
         </b><br>       
     </p>
 </div>
-<div style="border-style:solid;margin:auto;max-width:75%;text-align:center">
+<!-- <div style="border-style:solid;margin:auto;max-width:75%;text-align:center">
     <p style="margin:5px"><b>The stonk by stonk tool does not have anything to do with Bitcoin directly but is useful to compare 
         the relative prices of stonks. This may come in handy for rebalancing portfolios or pair trading.</b>
     </p>
-</div>
+</div> -->
 <br>
 {% endblock %}
