@@ -24,6 +24,11 @@ def about():
 def error_page():
     return render_template("error_page.html")
 
+@app.route("/last5")
+def last5():
+    context = previous5()
+    return render_template("last5.html", **context)
+
 class Index(MethodView):
     def get(self):
         graph_display = "none"

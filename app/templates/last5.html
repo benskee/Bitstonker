@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 style="text-align:center">Last 5 Days of Bitcoin at 4pm EST<br><br></h1>
+<div style="text-align:center">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{date0}}</td>
+                <td>{{price0}}</td>
+            </tr>
+            <tr>
+                <td>{{date1}}</td>
+                <td>{{price1}}</td>
+            </tr>
+            <tr>
+                <td>{{date2}}</td>
+                <td>{{price2}}</td>
+            </tr>
+            <tr>
+                <td>{{date3}}</td>
+                <td>{{price3}}</td>
+            </tr>
+            <tr>
+                <td>{{date4}}</td>
+                <td>{{price4}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>   
+<h3><br><a href="{{ url_for('index') }}">Home</a></h3>
+{% endblock %}

@@ -241,3 +241,14 @@ def s2s_populate_table(df_stonk2, start, end):
     end_price=end_price, roi=roi, roi_pct=roi_pct)
 
     return context_b
+
+def previous5():
+    df_btc = create_df_btc()
+    last5 = df_btc[-5:]
+    last5.reset_index(inplace=True)
+    context = {}
+    for row in range(0,5):
+        context[f'date{row}']=last5.date[row]
+        context[f'price{row}']=last5.close_price[row]
+        
+    return context
