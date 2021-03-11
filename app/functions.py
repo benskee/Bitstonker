@@ -27,6 +27,12 @@ def get_stonk_df(stonk):
     df_stonk.set_index('date', inplace=True)
     return df_stonk
 
+def get_sample_stonk_df(stonk):
+    df_stonk = pd.read_csv(rf'app/static/samples/{stonk}.csv')
+    date_df(df_stonk)
+    df_stonk.set_index('date', inplace=True)
+    return df_stonk
+
 def stonk_error(stonk):
     api_key = os.environ['SECRET_KEY']
     error_alpha = requests.get(f'https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={stonk}&apikey={api_key}' )
@@ -47,6 +53,12 @@ def create_df_btc():
     conn.close()
     cnx.dispose()
     df_btc.rename(columns={'price':'close_price'}, inplace=True)
+    date_df(df_btc)
+    df_btc.set_index('date', inplace=True)
+    return df_btc
+
+def create_sample_df_btc():
+    df_btc = pd.read_csv(r'app/static/samples/sample_btc.csv')
     date_df(df_btc)
     df_btc.set_index('date', inplace=True)
     return df_btc

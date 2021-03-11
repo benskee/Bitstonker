@@ -96,8 +96,8 @@ class S2s(MethodView):
         
     def post(self):
         req = request.form.get
-        stonk1 = req('stonk1')
-        stonk2 = req('stonk2')
+        stonk1 = req('stonk1').upper()
+        stonk2 = req('stonk2').upper()
         start_date = req('start_date')
         end_date = req('end_date')
         check = req('dollar_check')

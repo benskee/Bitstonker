@@ -1,3 +1,4 @@
-# BTC_stock_tool-WIP-
-analyze stocks denominated in Bitcoin (work in progress)
-this project can be found at bitstonker.com
+# Bitstonker
+Analyze stocks denominated in Bitcoin. This project can be found at bitstonker.com
+
+
