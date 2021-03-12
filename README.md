@@ -20,12 +20,12 @@ This is a portfolio project that allows the user to analyze stocks denominated i
 
 3. Activate your virtual environment
 
-Windows
+Windows 
     ```sh
     bitstonker-env\Scripts\activate.bat
     ```
 
-Unix or Mac
+Unix or Mac 
    ```sh 
    source bitstonker-env/bin/activate
    ```
@@ -62,7 +62,7 @@ For the stonks you can either:
 1. Use an api key from alphavantage.com. If you would like to obtain a free one follow this
 link. [https://www.alphavantage.co/support/#api-key](https://www.alphavantage.co/support#api-key)
 
-To use your api key change the `SECRET_KEY` variable in `config.py`
+To use your api key change the `SECRET_KEY` variable in `config.py` 
     ```sh 
     SECRET_KEY = 'your alphavantage api key'
     ```
