@@ -262,5 +262,4 @@ def previous5():
     for row in range(0,5):
         context[f'date{row}']=last5.date[row]
         context[f'price{row}']=last5.close_price[row]
-        
     return context
