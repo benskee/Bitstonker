@@ -69,11 +69,11 @@ To use your api key change the `SECRET_KEY` variable in `config.py`
 
 2. Use the sample csv files. 
 In [/ap ps/routes.py](/apps/routes.py) replace the function 
-    ```sh
+    ```python
     get_stonk_df() 
     ```
 with 
-    ```sh
+    ```py
     get_sample_stonk_df()  
     ```
 
