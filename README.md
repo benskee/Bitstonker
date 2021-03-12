@@ -9,20 +9,21 @@ This is a portfolio project that allows the user to analyze stocks denominated i
 ## Getting Started
 
 1. Clone the repo
-  ```sh 
-  git clone https://github.com/benskee/Bitstonker.git
-  ```
+    ```sh 
+    git clone https://github.com/benskee/Bitstonker.git
+    ```
 
 2. Create your virtual environment.
-```sh
-python3 -m venv bitstonker-env
-```
+    ```sh
+    python3 -m venv bitstonker-env
+    ```
 
 3. Activate your virtual environment
-  Windows
-  ```sh
-  bitstonker-env\Scripts\activate.bat
-  ```
+
+Windows
+    ```sh
+    bitstonker-env\Scripts\activate.bat
+    ```
 
 Unix or Mac
    ```sh 
@@ -40,13 +41,15 @@ If you need help with virtual environments visit [this tutorial](https://docs.py
 ## Activate Sample Database
 
 In [/app/routes.py](/app/routes.py) find 
-```df_btc = create_df_btc()```
+    ```sh
+    df_btc = create_df_btc()
+    ```
 ([link](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L53)) 
 
 Replace with 
-  ```sh
-  df_btc = create_sample_df_btc()
-  ```
+    ```sh
+    df_btc = create_sample_df_btc()
+    ```
 
 This will run the app using the included sample_btc.csv in place of the btc database. 
 If you would like to generate your own Bitcoin csv you can visit [This Repo](https://github.com/benskee/Bitcoin_stock_hours)
@@ -60,16 +63,19 @@ For the stonks you can either:
 link. [https://www.alphavantage.co/support/#api-key](https://www.alphavantage.co/support#api-key)
 
 To use your api key change the `SECRET_KEY` variable in `config.py`
-```sh SECRET_KEY = 'your alphavantage api key'
-```
+    ```sh 
+    SECRET_KEY = 'your alphavantage api key'
+    ```
 
 2. Use the sample csv files. 
-In [/apps/routes.py](/apps/routes.py) replace the function 
-```sh
-get_stonk_df()```
+In [/ap ps/routes.py](/apps/routes.py) replace the function 
+    ```sh
+    get_stonk_df() 
+    ```
 with 
-   ```sh
-   get_sample_stonk_df()```
+    ```sh
+    get_sample_stonk_df()  
+    ```
 
 There are 3 occurances: the first is for the main page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L49)
 The other two are for the stonk-by-stonk page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L106-L110)
@@ -79,7 +85,9 @@ For this option you will not have access to the api and will be limited to the s
 
 ## Run the App
 The last step is to activate flask on your local host 
-```sh flask run```
+    ```sh 
+    flask run
+    ``` 
 
 
 **Happy stonking!**
