@@ -25,19 +25,19 @@ python3 -m venv bitstonker-env
   ```
 
 Unix or Mac
-  ```sh 
-  source bitstonker-env/bin/activate
-  ```
+   ```sh 
+   source bitstonker-env/bin/activate
+   ```
 
 If you need help with virtual environments visit [this tutorial](https://docs.python.org/3/tutorial/venv.html)
 
 4. Install the packages from requirements.txt 
-  ```sh
-  pip install -r requirements.txt
-  ```
+    ```sh
+    pip install -r requirements.txt
+    ```
 
 
-### Activate Sample Database
+## Activate Sample Database
 
 In [/app/routes.py](/app/routes.py) find 
 ```df_btc = create_df_btc()```
@@ -53,20 +53,23 @@ If you would like to generate your own Bitcoin csv you can visit [This Repo](htt
 
 
 
-### Activate Stonks
+## Activate Stonks
 For the stonks you can either:
 
 1. Use an api key from alphavantage.com. If you would like to obtain a free one follow this
 link. [https://www.alphavantage.co/support/#api-key](https://www.alphavantage.co/support#api-key)
 
 To use your api key change the `SECRET_KEY` variable in `config.py`
-```SECRET_KEY = 'your alphavantage api key'```
+```sh SECRET_KEY = 'your alphavantage api key'
+```
 
 2. Use the sample csv files. 
 In [/apps/routes.py](/apps/routes.py) replace the function 
-```get_stonk_df()```
+```sh
+get_stonk_df()```
 with 
-```get_sample_stonk_df()```
+   ```sh
+   get_sample_stonk_df()```
 
 There are 3 occurances: the first is for the main page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L49)
 The other two are for the stonk-by-stonk page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L106-L110)
@@ -76,7 +79,7 @@ For this option you will not have access to the api and will be limited to the s
 
 ## Run the App
 The last step is to activate flask on your local host 
-```flask run```
+```sh flask run```
 
 
 **Happy stonking!**
