@@ -13,7 +13,7 @@ This is a portfolio project that allows the user to analyze stocks denominated i
     git clone https://github.com/benskee/Bitstonker.git
     ```
 
-2. Create your virtual environment.
+2. Create your virtual environment. (If you need help with virtual environments visit [this tutorial](https://docs.python.org/3/tutorial/venv.html))
     ```sh
     python3 -m venv bitstonker-env
     ```
@@ -22,16 +22,14 @@ This is a portfolio project that allows the user to analyze stocks denominated i
 
 Windows 
 
-    ```shell
-    bitstonker-env\Scripts\activate.bat
-    ```
+```
+bitstonker-env\Scripts\activate.bat
+```
 
 Unix or Mac 
    ```sh 
    source bitstonker-env/bin/activate
    ```
-
-If you need help with virtual environments visit [this tutorial](https://docs.python.org/3/tutorial/venv.html)
 
 4. Install the packages from requirements.txt 
     ```sh
@@ -41,16 +39,17 @@ If you need help with virtual environments visit [this tutorial](https://docs.py
 
 ## Activate Sample Database
 
-In [/app/routes.py](/app/routes.py) find 
-    ```python
-    df_btc = create_df_btc()
-    ```
-([link](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L53)) 
+In [/app/routes.py](/app/routes.py) find ([this function](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L53)) 
+
+```
+df_btc = create_df_btc()
+```
 
 Replace with 
-    ```python
-    df_btc = create_sample_df_btc()
-    ```
+
+```
+df_btc = create_sample_df_btc()
+```
 
 This will run the app using the included sample_btc.csv in place of the btc database. 
 If you would like to generate your own Bitcoin csv you can visit [This Repo](https://github.com/benskee/Bitcoin_stock_hours)
@@ -65,19 +64,21 @@ link. [https://www.alphavantage.co/support/#api-key](https://www.alphavantage.co
 
 To use your api key change the `SECRET_KEY` variable in `config.py` 
     
-    ```
-    SECRET_KEY = 'your alphavantage api key'
-    ```
+```
+SECRET_KEY = 'your alphavantage api key'
+```
 
 2. Use the sample csv files. 
-In [/ap ps/routes.py](/apps/routes.py) replace the function 
-    ```python
-    get_stonk_df() 
-    ```
-with 
-    ```python
-    get_sample_stonk_df()  
-    ```
+In [/ap ps/routes.py](/apps/routes.py) find the function 
+```
+get_stonk_df() 
+```
+
+replace with 
+
+```
+get_sample_stonk_df()  
+```
 
 There are 3 occurances: the first is for the main page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L49)
 The other two are for the stonk-by-stonk page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L106-L110)
