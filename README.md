@@ -9,22 +9,32 @@ This is a portfolio project that allows the user to analyze stocks denominated i
 ## Getting Started
 
 1. Clone the repo
-```git clone https://github.com/benskee/Bitstonker.git```
+  ```sh 
+  git clone https://github.com/benskee/Bitstonker.git
+  ```
 
 2. Create your virtual environment.
-```python3 -m venv bitstonker-env```
+```sh
+python3 -m venv bitstonker-env
+```
 
 3. Activate your virtual environment
-Windows
-```bitstonker-env\Scripts\activate.bat```
+  Windows
+  ```sh
+  bitstonker-env\Scripts\activate.bat
+  ```
 
 Unix or Mac
-```source bitstonker-env/bin/activate```
+  ```sh 
+  source bitstonker-env/bin/activate
+  ```
 
 If you need help with virtual environments visit [this tutorial](https://docs.python.org/3/tutorial/venv.html)
 
 4. Install the packages from requirements.txt 
-```pip install -r requirements.txt```
+  ```sh
+  pip install -r requirements.txt
+  ```
 
 
 ### Activate Sample Database
@@ -34,7 +44,9 @@ In [/app/routes.py](/app/routes.py) find
 ([link](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L53)) 
 
 Replace with 
-```df_btc = create_sample_df_btc()```
+  ```sh
+  df_btc = create_sample_df_btc()
+  ```
 
 This will run the app using the included sample_btc.csv in place of the btc database. 
 If you would like to generate your own Bitcoin csv you can visit [This Repo](https://github.com/benskee/Bitcoin_stock_hours)
