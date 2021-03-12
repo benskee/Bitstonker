@@ -59,7 +59,8 @@ If you would like to generate your own Bitcoin csv you can visit [This Repo](htt
 ## Activate Stonks
 For the stonks you can either:
 
-1. Use an api key from alphavantage.com. If you would like to obtain a free one follow this
+### 1) Use an API KEY
+Use an api key from alphavantage.com. If you would like to obtain a free one follow this
 link. [https://www.alphavantage.co/support/#api-key](https://www.alphavantage.co/support#api-key)
 
 To use your api key change the `SECRET_KEY` variable in `config.py` 
@@ -67,8 +68,8 @@ To use your api key change the `SECRET_KEY` variable in `config.py`
 ```
 SECRET_KEY = 'your alphavantage api key'
 ```
-
-2. Use the sample csv files. 
+### 2) Use Sample CSV Files
+If you do not want to use an API key you can use the sample csv files. 
 In [/ap ps/routes.py](/apps/routes.py) find the function 
 ```
 get_stonk_df() 
@@ -80,11 +81,11 @@ replace with
 get_sample_stonk_df()  
 ```
 
-There are 3 occurances: the first is for the main page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L49)
-The other two are for the stonk-by-stonk page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L106-L110)
+There are 3 occurances: the first is for the main page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L49).
+The other two are for the stonk-by-stonk page and can be found [here](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L106-L110).
 
 For this option you will not have access to the api and will be limited to the sample tickers 
-(GBTC, TSLA, AMZN, SPY, COKE, PEP)
+(GBTC, TSLA, AMZN, SPY, COKE, PEP).
 
 ## Run the App
 The last step is to activate flask on your local host 
