@@ -5,7 +5,9 @@ If you would like to test it out on your own here are the steps after you clone 
 
 Create and activate your virtual environment.
 If you need help with virtual environments visit [this tutorial](https://docs.python.org/3/tutorial/venv.html)
+
 Install the packages from requirements.txt (pip install -r requirements.txt)
+
 
 ### Activate Sample Database
 In [/app/routes.py](/app/routes.py) find `df_btc = create_df_btc()`
@@ -15,6 +17,7 @@ Replace with `df_btc = create_sample_df_btc()`
 
 This will run the app using the included sample_btc.csv in place of the btc database. 
 If you would like to generate your own Bitcoin csv you can visit [This Repo](https://github.com/benskee/Bitcoin_stock_hours)
+
 
 
 ### Activate Stonks
@@ -28,6 +31,7 @@ SECRET_KEY='your_alphavantage_api_key'
 (replace the part in quotes with your alphavantage api key)
 
 
+
 b) Use the sample csv files. In [/apps/routes.py](/apps/routes.py) replace the function `get_stonk_df()`
 with `get_sample_stonk_df()`
 
@@ -38,6 +42,7 @@ For this option you will not have access to the api and will be limited to the t
 (GBTC, TSLA, AMZN, SPY, COKE, PEP)
 
 
-The last step is to activate flask on your local host (flask run in the cli).
+
+The last step is to activate flask on your local host (type `flask run` in the CLI).
 
 **Happy stonking!**
