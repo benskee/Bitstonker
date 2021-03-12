@@ -70,7 +70,7 @@ SECRET_KEY = 'your alphavantage api key'
 ```
 ### 2) Use Sample CSV Files
 If you do not want to use an API key you can use the sample csv files. 
-In [/ap ps/routes.py](/apps/routes.py) find the function 
+In [/app/routes.py](/app/routes.py) find the function 
 ```
 get_stonk_df() 
 ```
