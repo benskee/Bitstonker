@@ -20,16 +20,16 @@ This is a portfolio project that allows the user to analyze stocks denominated i
 
 3. Activate your virtual environment
 
-Windows 
+    Windows 
 
-```
-bitstonker-env\Scripts\activate.bat
-```
+    ```
+    bitstonker-env\Scripts\activate.bat
+    ```
 
-Unix or Mac 
-   ```sh 
-   source bitstonker-env/bin/activate
-   ```
+    Unix or Mac 
+    ```sh 
+    source bitstonker-env/bin/activate
+    ```
 
 4. Install the packages from requirements.txt 
     ```sh
