@@ -9,7 +9,7 @@ This is a portfolio project that allows the user to analyze stocks denominated i
 ## Getting Started
 
 1. Clone the repo
-    ```sh 
+    ```shell
     git clone https://github.com/benskee/Bitstonker.git
     ```
 
@@ -21,7 +21,8 @@ This is a portfolio project that allows the user to analyze stocks denominated i
 3. Activate your virtual environment
 
 Windows 
-    ```sh
+
+    ```shell
     bitstonker-env\Scripts\activate.bat
     ```
 
@@ -41,13 +42,13 @@ If you need help with virtual environments visit [this tutorial](https://docs.py
 ## Activate Sample Database
 
 In [/app/routes.py](/app/routes.py) find 
-    ```sh
+    ```python
     df_btc = create_df_btc()
     ```
 ([link](https://github.com/benskee/Bitstonker/blob/55e713d70fc8fd5f1844e23f8a2eefeeed82247d/app/routes.py#L53)) 
 
 Replace with 
-    ```sh
+    ```python
     df_btc = create_sample_df_btc()
     ```
 
@@ -63,7 +64,8 @@ For the stonks you can either:
 link. [https://www.alphavantage.co/support/#api-key](https://www.alphavantage.co/support#api-key)
 
 To use your api key change the `SECRET_KEY` variable in `config.py` 
-    ```sh 
+    
+    ```
     SECRET_KEY = 'your alphavantage api key'
     ```
 
@@ -73,7 +75,7 @@ In [/ap ps/routes.py](/apps/routes.py) replace the function
     get_stonk_df() 
     ```
 with 
-    ```py
+    ```python
     get_sample_stonk_df()  
     ```
 
@@ -85,9 +87,9 @@ For this option you will not have access to the api and will be limited to the s
 
 ## Run the App
 The last step is to activate flask on your local host 
-    ```sh 
-    flask run
-    ``` 
+```
+flask run
+``` 
 
 
 **Happy stonking!**
