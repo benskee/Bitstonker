@@ -13,8 +13,11 @@ def date_df(df):
 
 def get_stonk_df(stonk):
     api_key = os.environ['SECRET_KEY']
-    stonk_alpha = requests.get(f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={stonk}&outputsize=full&apikey={api_key}')
+    address = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={stonk}&outputsize=full&apikey={api_key}'
+    print('address', address)
+    stonk_alpha = requests.get(address)
     this_df = stonk_alpha.json()
+    print(this_df.keys())
     if 'Error Message' in this_df:
         return this_df
     df_stonk = pd.DataFrame.from_dict(this_df['Time Series (Daily)'],orient='index')
