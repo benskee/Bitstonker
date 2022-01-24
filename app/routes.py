@@ -86,6 +86,7 @@ class Index(MethodView):
         return render_template('index.html', **context)
 app.add_url_rule('/', view_func=Index.as_view('index'))
 
+
 class S2s(MethodView):
 
     def get(self):
